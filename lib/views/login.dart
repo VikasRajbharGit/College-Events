@@ -17,15 +17,23 @@ class login extends StatelessWidget {
                   'Terna',
                   style: title,
                 ),
-                // CircleAvatar(
-                //   radius: 100.0,
-                //   backgroundColor: Colors.red,
-                // ),
-                Image.asset(
-                  'assets/images/anim.gif',
+                Stack(
+                  children: <Widget>[
+                    Positioned(
+                        left: MediaQuery.of(context).size.width * 0.33,
+                        top: MediaQuery.of(context).size.height * 0.2,
+                        child: Text('Evento',
+                            style:
+                                TextStyle(fontSize: 40, color: Colors.pink))),
+                    Image.asset(
+                      'assets/images/anim.gif',
+                    ),
+                  ],
                 ),
                 GestureDetector(
-                  onTap:(){model.gSignIn(context);},
+                  onTap: () {
+                    model.gSignIn(context);
+                  },
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.08,
                     width: MediaQuery.of(context).size.width * 0.8,

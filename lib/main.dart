@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'views/login.dart';
 
-void main() async{
-   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+void main() async {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   FirebaseAuth _auth;
   _auth = FirebaseAuth.instance;
   final db = Firestore.instance;
@@ -27,8 +27,7 @@ void main() async{
     //   registered = results.exists;
     // });
   }
-    runApp(MyApp(loggedIn,registered));
-   
+  runApp(MyApp(loggedIn, registered));
 }
 
 class MyApp extends StatelessWidget {
@@ -41,15 +40,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModel(
-      model: _model, 
+      model: _model,
       child: MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        
-        primarySwatch: Colors.blue,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          fontFamily: 'Lexend Deca',
+          primarySwatch: Colors.blue,
+        ),
+        home: !loggedIn
+            ? login()
+            : (!registered
+                ? home()
+                : login()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: !loggedIn ? login() : (!registered ? home() : login()),//login()//MyHomePage(title: 'Flutter Demo Home Page'),
-    ),
     );
   }
 }
@@ -57,7 +60,6 @@ class MyApp extends StatelessWidget {
 // class MyHomePage extends StatefulWidget {
 //   MyHomePage({Key key, this.title}) : super(key: key);
 
-  
 //   final String title;
 
 //   @override
@@ -67,11 +69,9 @@ class MyApp extends StatelessWidget {
 // class _MyHomePageState extends State<MyHomePage> {
 //   int _counter = 0;
 
-  
-
 //   @override
 //   Widget build(BuildContext context) {
-   
+
 //     return Scaffold(
 //       appBar: AppBar(
 //         // Here we take the value from the MyHomePage object that was created by
