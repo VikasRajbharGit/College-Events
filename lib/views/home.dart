@@ -66,6 +66,7 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
                     style: TextStyle(fontFamily: 'Lexend Deca'),
                   ))
             ],
+            
             onTap: (int index) {
               setState(() {
                 _tabController.index = index;
