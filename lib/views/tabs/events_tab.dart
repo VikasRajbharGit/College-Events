@@ -20,7 +20,7 @@ CustomTab eventsTab = CustomTab(
                       ));
                 },
                 child: Card(
-                  elevation: 10,
+                  elevation: 15,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -28,25 +28,30 @@ CustomTab eventsTab = CustomTab(
                       //height: MediaQuery.of(context).size.height * 0.25,
                       //width: MediaQuery.of(context).size.width * 0.8,
                       child: Column(
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/valley.jpg',
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)),
+                        child: Image.asset(
+                          'assets/images/valley.jpg',
 
-                            // width: MediaQuery.of(context).size.width*0.8 ,
-                            // height: MediaQuery.of(context).size.height * 0.01,
-                            fit: BoxFit.fill,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(5),
-                          ),
-                          Center(
-                            child: Text(
-                              'Event ${index + 1}',
-                              style: TextStyle(fontSize: 30),
-                            ),
-                          )
-                        ],
-                      )),
+                          // width: MediaQuery.of(context).size.width*0.8 ,
+                          // height: MediaQuery.of(context).size.height * 0.01,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(5),
+                      ),
+                      Center(
+                        child: Text(
+                          'Event ${index + 1}',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      )
+                    ],
+                  )),
                 ),
               );
             },

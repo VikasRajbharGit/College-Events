@@ -72,6 +72,7 @@ class _homeState extends State<home> with SingleTickerProviderStateMixin {
                 _tabController.index = index;
               });
             },
+            
           ),
           drawer: NavigationDrawer(1, context),
           floatingActionButton: tabs[_tabController.index].floatingActionButton,

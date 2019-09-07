@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'views/login.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -27,10 +28,13 @@ void main() async {
     //   registered = results.exists;
     // });
   }
+  fcmHandler();
   runApp(MyApp(loggedIn, registered));
 }
 
 class MyApp extends StatelessWidget {
+  final FirebaseMessaging _firebaseMessaging= FirebaseMessaging();
+
   bool loggedIn;
   bool registered;
   final FirebaseHandler _model = new FirebaseHandler();
@@ -44,10 +48,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
+          // appBarTheme: AppBarTheme(color: Colors.grey[900]),
+          // canvasColor: Colors.black,
           fontFamily: 'Lexend Deca',
-          primarySwatch: Colors.blue,
-          // canvasColor: Colors.black38,
-          // cardColor: Colors.black12
+          primarySwatch: Colors.red,
+          //cardColor: Colors.grey[900]
+          
           
         ),
         home: !loggedIn
@@ -57,5 +63,25 @@ class MyApp extends StatelessWidget {
                 : login()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
+
   }
+}
+
+fcmHandler() async{
+  final FirebaseMessaging _firebaseMessaging= FirebaseMessaging();
+   _firebaseMessaging.configure(
+       onMessage: (Map<String, dynamic> message) async {
+         print("onMessage: $message");
+         //_showItemDialog(message);
+       },
+       //onBackgroundMessage: myBackgroundMessageHandler,
+       onLaunch: (Map<String, dynamic> message) async {
+         print("onLaunch: $message");
+         //_navigateToItemDetail(message);
+       },
+       onResume: (Map<String, dynamic> message) async {
+         print("onResume: $message");
+         //_navigateToItemDetail(message);
+       },
+     );
 }
