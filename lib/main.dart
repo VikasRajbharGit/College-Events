@@ -71,16 +71,16 @@ fcmHandler() async{
   final FirebaseMessaging _firebaseMessaging= FirebaseMessaging();
    _firebaseMessaging.configure(
        onMessage: (Map<String, dynamic> message) async {
-         print("onMessage: $message");
+         print("onMessage:------> $message");
          //_showItemDialog(message);
        },
        //onBackgroundMessage: myBackgroundMessageHandler,
        onLaunch: (Map<String, dynamic> message) async {
-         print("onLaunch: $message");
+         print("onLaunch:----> $message");
          //_navigateToItemDetail(message);
        },
        onResume: (Map<String, dynamic> message) async {
-         print("onResume: $message");
+         print("onResume:-----> $message");
          //_navigateToItemDetail(message);
        },
      );
