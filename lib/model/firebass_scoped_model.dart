@@ -79,13 +79,14 @@ class FirebaseHandler extends Model {
           .document(currentUser.uid)
           .collection('tokens')
           .document(fcmToken);
-
+      var f=_fcm.subscribeToTopic('notification');
+      print('------------------>>>$f');
       await tokens.setData({
         'token': fcmToken,
         'createdAt': FieldValue.serverTimestamp(), // optional
         'platform': Platform.operatingSystem // optional
       });
-      _fcm.subscribeToTopic('notification');
+      
     }
   }
 }
