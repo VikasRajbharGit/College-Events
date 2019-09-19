@@ -15,6 +15,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   AnimationController _controller;
   Animation<double> animation;
   double radius = 0;
@@ -42,6 +43,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
         return Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text('Profile'),
           ),
@@ -74,9 +76,24 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 style: TextStyle(fontSize: 50),
               ),
               RaisedButton(
-                onPressed: (){model.saveDeviceToken();},
+                onPressed: () {
+                  model.saveDeviceToken();
+                },
                 child: Text('Generate Token'),
               ),
+              RaisedButton(
+                  onPressed: () {
+                    model.uploadToStorage('image', context, _scaffoldKey);
+                  },
+                  child: Text('Upload image')),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: model.imgUrls.length,
+                  itemBuilder: (_, index) {
+                    return Image.network(model.imgUrls[index]);
+                  },
+                ),
+              )
             ],
           )),
           drawer: NavigationDrawer(2, context),
@@ -89,18 +106,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     //var dir1 = await getApplicationDocumentsDirectory();
     //print(dir1.path);
     //Share.share('Hello');
-    var img = await get(model.ppic).then((value) { //model.ppic is image address
+    var img = await get(model.ppic).then((value) {
+      //model.ppic is image address
       return value.bodyBytes;
     });
-    var d=await new Directory('/storage/emulated/0/Evento').create();
-    var dir='/storage/emulated/0/Evento';
+    var d = await new Directory('/storage/emulated/0/Evento').create();
+    var dir = '/storage/emulated/0/Evento';
     File file = new File(join(dir, 'imagetest2.png'));
     file.writeAsBytesSync(img);
-    final uri=Uri.file('/storage/emulated/0/Evento/imagetest2.png');
-    SimpleShare.share(
-      uri: uri.toString(),
-      title: 'testing',
-      msg: 'Test'
-    );
+    final uri = Uri.file('/storage/emulated/0/Evento/imagetest2.png');
+    SimpleShare.share(uri: uri.toString(), title: 'testing', msg: 'Test');
   }
 }

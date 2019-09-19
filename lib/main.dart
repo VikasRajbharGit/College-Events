@@ -7,12 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'views/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'app_builder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+bool t=true;
 void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   FirebaseAuth _auth;
   _auth = FirebaseAuth.instance;
   final db = Firestore.instance;
+   var prefs = await SharedPreferences.getInstance();
+   t= await prefs.getBool('tm');
 
   bool loggedIn = false;
   bool registered = false;
@@ -38,6 +43,7 @@ class MyApp extends StatelessWidget {
   bool loggedIn;
   bool registered;
   final FirebaseHandler _model = new FirebaseHandler();
+  
   MyApp(this.loggedIn, this.registered);
 
   // This widget is the root of your application.
@@ -45,7 +51,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedModel(
       model: _model,
-      child: MaterialApp(
+      child: AppBuilder(
+        builder: (context){
+          // _model.getTheme(context);
+          return MaterialApp(
+        darkTheme: ThemeData(canvasColor: Colors.black,brightness: Brightness.dark),
+        themeMode: _model.tm,
         title: 'Flutter Demo',
         theme: ThemeData(
           // appBarTheme: AppBarTheme(color: Colors.grey[900]),
@@ -61,7 +72,9 @@ class MyApp extends StatelessWidget {
             : (!registered
                 ? home()
                 : login()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
-      ),
+      );
+        },
+      )
     );
 
   }
