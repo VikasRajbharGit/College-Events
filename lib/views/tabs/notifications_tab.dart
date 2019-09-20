@@ -4,6 +4,8 @@ import '../detail_view.dart';
 import 'base_tab.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'create_screens/new_notice.dart';
+import 'create_screens/test.dart';
 
 CustomTab notificationsTab = CustomTab(
     appBarTitle: 'Notices',
@@ -175,4 +177,16 @@ CustomTab notificationsTab = CustomTab(
         );
       },
     ),
-    floatingActionButton: null);
+    floatingActionButton:Builder(
+      builder: (context) {
+        return FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            Navigator.push(
+            context, MaterialPageRoute(builder: (BuildContext context) => test()));
+            
+          },
+          );
+      }
+    )
+    );
