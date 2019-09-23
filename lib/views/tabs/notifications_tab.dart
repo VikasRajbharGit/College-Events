@@ -183,7 +183,7 @@ CustomTab notificationsTab = CustomTab(
           child: Icon(Icons.add),
           onPressed: (){
             Navigator.push(
-            context, MaterialPageRoute(builder: (BuildContext context) => test()));
+            context, MaterialPageRoute(builder: (BuildContext context) => newNotice()));
             
           },
           );

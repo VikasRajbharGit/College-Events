@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 import 'package:http/http.dart' show get;
+import 'package:file_picker/file_picker.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -82,8 +83,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 child: Text('Generate Token'),
               ),
               RaisedButton(
-                  onPressed: () {
-                    model.uploadToStorage('image', context, _scaffoldKey);
+                  onPressed: () async {
+                    Map<String,String> paths = await model.stageNoticeFiles(FileType.IMAGE);
+                    //print('-------xxxxx $paths');
+                    await model.uploadToStorage(context, _scaffoldKey, paths);
                   },
                   child: Text('Upload image')),
               Expanded(

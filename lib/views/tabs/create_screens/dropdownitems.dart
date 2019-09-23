@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // List<DropdownMenuItem<String>> department=[DropdownMenuItem(child: Text('Computer'),),DropdownMenuItem(child: Text('IT'),),DropdownMenuItem(child: Text('Electronics'),),DropdownMenuItem(child: Text('EXTC'),),DropdownMenuItem(child: Text('Mechanical'),),DropdownMenuItem(child: Text('Civil'),)];
 // List<DropdownMenuItem<String>> compDivisons=[DropdownMenuItem(child: Text('A'),),DropdownMenuItem(child: Text('B'),),DropdownMenuItem(child: Text('C'),)];
 
-List year=['SE','TE','BE'];
-List departments=['IT','ELX','EXTC','MECH','CIVIL'];
+List year=['FE','SE','TE','BE'];
+List departments=['COMP','IT','ELX','EXTC','MECH','CIVIL'];
 List compDivs=['Comp-A','Comp-B','Comp-C'];
 List feDivs=['FE-A','FE-B','FE-C','FE-D','FE-E'];

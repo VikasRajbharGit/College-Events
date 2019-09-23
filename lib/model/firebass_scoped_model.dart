@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../app_builder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
+import '../model/notice_model.dart';
 
 class FirebaseHandler extends Model {
   ThemeMode tm = ThemeMode.light;
@@ -27,16 +28,51 @@ class FirebaseHandler extends Model {
   var username = 'Username';
   String ppic;
   var email = '';
+  var fToUp;
   var imgUrls = new List();
+  Map noticeMap = {};
   notifyListeners();
 
-  uploadToStorage(type, context, key) async {
-    Map<String, String> filePaths;
-    if (type == 'image') {
-      filePaths = await FilePicker.getMultiFilePath(type: FileType.IMAGE);
-    } else {
-      filePaths = await FilePicker.getMultiFilePath(fileExtension: 'pdf');
+  void handleSubmit(GlobalKey<FormState> formkey, Notice noticeData) async {
+    final FormState form = formkey.currentState;
+    if (form.validate()) {
+      form.save();
+      var cuser = await _auth.currentUser();
+      var uid = cuser.uid;
+      //print('---------->$cuser');
+
+      //DocumentReference ref=await db.collection(uid).add(todo.toJson());
+      //await db.collection('users').document('registered').collection(uid).add(u.toJson());
+      await db
+          .collection('notices')
+          .document(noticeData.title)
+          .setData(noticeData.toJson());
+
+      //await db.collection('user').add(u.toJson());
+      //form.reset();
+
+      //databaseReference.push().set(todo.toJson());
     }
+  }
+
+  stageNoticeFiles(fileType) async {
+    Map<String, String> filePaths =
+        await FilePicker.getMultiFilePath(type: fileType);
+    print('--------------$filePaths');
+    fToUp = filePaths;
+    notifyListeners();
+    return filePaths;
+  }
+
+  uploadToStorage(context, key, filePaths) async {
+    // Map<String, String> filePaths;
+    // if (type == 'image') {
+    //   filePaths = await FilePicker.getMultiFilePath(type: FileType.IMAGE);
+    // } else {
+    //   filePaths = await FilePicker.getMultiFilePath(fileExtension: 'pdf');
+    // }
+    List result = [];
+    print(filePaths);
     try {
       filePaths.forEach((fileName, filePath) async {
         final StorageUploadTask uploadTask =
@@ -51,12 +87,15 @@ class FirebaseHandler extends Model {
         print('---------->> $url');
         imgUrls.add(url);
         notifyListeners();
+        print('-------<<<<<<<$result');
+        notifyListeners();
         final snackBar = SnackBar(
           content: Text('Image(s) uploaded'),
           duration: Duration(seconds: 3),
         );
-        key.currentState.showSnackBar(snackBar);
+        //key.currentState.showSnackBar(snackBar);
       });
+      return result;
     } catch (e) {
       print('Error');
     }
@@ -109,6 +148,7 @@ class FirebaseHandler extends Model {
 
   getTheme(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    //var t = true;
     var t = await prefs.getBool('tm');
     if (t) {
       tm = ThemeMode.light;
