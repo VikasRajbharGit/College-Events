@@ -177,16 +177,14 @@ CustomTab notificationsTab = CustomTab(
         );
       },
     ),
-    floatingActionButton:Builder(
-      builder: (context) {
-        return FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: (){
-            Navigator.push(
-            context, MaterialPageRoute(builder: (BuildContext context) => newNotice()));
-            
-          },
-          );
-      }
-    )
-    );
+    floatingActionButton: Builder(builder: (context) {
+      return FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => newNotice()));
+        },
+      );
+    }));

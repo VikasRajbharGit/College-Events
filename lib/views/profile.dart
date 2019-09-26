@@ -86,7 +86,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   onPressed: () async {
                     Map<String,String> paths = await model.stageNoticeFiles(FileType.IMAGE);
                     //print('-------xxxxx $paths');
-                    await model.uploadToStorage(context, _scaffoldKey, paths);
+                    //await model.uploadToStorage(context, _scaffoldKey, paths);
                   },
                   child: Text('Upload image')),
               Expanded(

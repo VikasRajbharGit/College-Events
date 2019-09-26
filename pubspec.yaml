@@ -37,6 +37,8 @@ dependencies:
   simple_share: ^0.0.1+4
   shared_preferences: ^0.5.3+4
   file_picker: ^1.4.1
+  dio: ^3.0.2
+
 
 
 
@@ -62,6 +64,8 @@ flutter:
    - assets/images/simba.gif
    - assets/images/lake.jpeg
    - assets/images/valley.jpg
+   - assets/images/done.gif
+   - assets/images/load.gif
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

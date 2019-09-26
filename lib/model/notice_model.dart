@@ -6,7 +6,7 @@ class Notice{
   List files ;
   String author;
   String audience;
-  FieldValue timeStamp;
+  String timeStamp;
 
   Notice(this.title,this.details,this.files,this.author,this.audience,this.timeStamp);
 

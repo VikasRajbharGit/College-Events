@@ -247,7 +247,7 @@ class _testState extends State<test> {
                   ],
                 ),
                 onPressed: () {
-                  model.uploadToStorage(context, _scaffoldKey, model.fToUp);
+                  //model.uploadToStorage(context, _scaffoldKey, model.fToUp);
                 },
               )
             ],

@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -28,7 +26,7 @@ class FirebaseHandler extends Model {
   var username = 'Username';
   String ppic;
   var email = '';
-  var fToUp;
+  Map<String, String> fToUp;
   var imgUrls = new List();
   Map noticeMap = {};
   notifyListeners();
@@ -39,17 +37,13 @@ class FirebaseHandler extends Model {
       form.save();
       var cuser = await _auth.currentUser();
       var uid = cuser.uid;
-      //print('---------->$cuser');
 
-      //DocumentReference ref=await db.collection(uid).add(todo.toJson());
-      //await db.collection('users').document('registered').collection(uid).add(u.toJson());
       await db
           .collection('notices')
           .document(noticeData.title)
           .setData(noticeData.toJson());
 
-      //await db.collection('user').add(u.toJson());
-      //form.reset();
+      form.reset();
 
       //databaseReference.push().set(todo.toJson());
     }
@@ -64,40 +58,36 @@ class FirebaseHandler extends Model {
     return filePaths;
   }
 
-  uploadToStorage(context, key, filePaths) async {
-    // Map<String, String> filePaths;
-    // if (type == 'image') {
-    //   filePaths = await FilePicker.getMultiFilePath(type: FileType.IMAGE);
-    // } else {
-    //   filePaths = await FilePicker.getMultiFilePath(fileExtension: 'pdf');
-    // }
+  uploadToStorage(context, key, Map<String, String> filePaths, name) async {
     List result = [];
     print(filePaths);
     try {
+      var i = 1;
       filePaths.forEach((fileName, filePath) async {
         final StorageUploadTask uploadTask =
-            storageReference.child(fileName).putFile(
+            storageReference.child('$name-$i-${p.extension(filePath)}').putFile(
                   File(filePath),
-                  // StorageMetadata(
-                  //   contentType: type + '/' + p.extension(filePath),
-                  // ),
                 );
-        final StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-        final String url = await taskSnapshot.ref.getDownloadURL();
-        print('---------->> $url');
-        imgUrls.add(url);
-        notifyListeners();
-        print('-------<<<<<<<$result');
-        notifyListeners();
-        final snackBar = SnackBar(
-          content: Text('Image(s) uploaded'),
-          duration: Duration(seconds: 3),
-        );
-        //key.currentState.showSnackBar(snackBar);
+        i++;
+        //final StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+        //notifyListeners();
       });
-      return result;
+      final snackBar = SnackBar(
+        content: Text('Image(s) uploaded'),
+        duration: Duration(seconds: 3),
+      );
+      notifyListeners();
+
+      //return taskSnapshot.ref.getDownloadURL();
+      //print('---------->> $url');
+
+      //notifyListeners();
+      print('-------<<<<<<<$result');
+
+      print('xxx------xxx $imgUrls');
+      return imgUrls;
     } catch (e) {
-      print('Error');
+      print(e);
     }
   }
 
@@ -107,8 +97,6 @@ class FirebaseHandler extends Model {
     ppic = currentUser.photoUrl;
     email = currentUser.email;
     notifyListeners();
-
-    //return Text('${cuser.displayName}');
   }
 
   gSignIn(BuildContext context) async {
@@ -142,21 +130,26 @@ class FirebaseHandler extends Model {
     if (tm == ThemeMode.dark) {
       switchTheme(context);
     }
+    _fcm.unsubscribeFromTopic('notification');
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (BuildContext context) => login()));
   }
 
   getTheme(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //var t = true;
-    var t = await prefs.getBool('tm');
-    if (t) {
-      tm = ThemeMode.light;
-    } else {
-      tm = ThemeMode.dark;
+    var t = true;
+    try {
+      t = await prefs.getBool('tm');
+      if (t) {
+        tm = ThemeMode.light;
+      } else {
+        tm = ThemeMode.dark;
+      }
+      notifyListeners();
+      AppBuilder.of(context).rebuild();
+    } catch (e) {
+      print(e);
     }
-    notifyListeners();
-    AppBuilder.of(context).rebuild();
   }
 
   switchTheme(context) async {
