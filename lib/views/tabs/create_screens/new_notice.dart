@@ -16,7 +16,7 @@ class _newNoticeState extends State<newNotice> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var toAll = false;
-  Notice notice = Notice('', '', [], '', '', '');
+  Notice notice = Notice('', '', [], '', [], '');
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _newNoticeState extends State<newNotice> {
             child: Form(
                 key: formKey,
                 child: Container(
-                  height: MediaQuery.of(context).size.height * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.85,
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -81,6 +81,9 @@ class _newNoticeState extends State<newNotice> {
                                 maxLines: 10,
                               ),
                             ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
                             CheckboxListTile(
                               title: Text('Send To ALL'),
                               controlAffinity: ListTileControlAffinity.leading,
@@ -94,59 +97,93 @@ class _newNoticeState extends State<newNotice> {
                             Padding(
                               padding: EdgeInsets.all(20),
                             ),
-                            RaisedButton(
-                              child: Text('Issue Notice'),
-                              onPressed: () {
-                                if (!toAll) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              test()));
-                                } else {
-                                  List urls;
-                                  //model.handleSubmit(formKey, notice)
-                                  try {
-                                    //var lock = Lock();
-                                    notice.author = model.currentUser.email;
-                                    model.fToUp.forEach((fileName, filePath) {
-                                      notice.files.add(p.extension(filePath));
-                                    });
-                                    notice.audience = 'notification';
-                                    notice.timeStamp =
-                                        DateTime.now().toString();
-                                    model.uploadToStorage(
-                                        context,
-                                        _scaffoldKey,
-                                        model.fToUp,
-                                        '${notice.title}-${notice.author}-${notice.timeStamp}');
-
-                                    model.handleSubmit(formKey, notice);
-                                    Navigator.of(context).pop();
-
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            content: Image.asset(
-                                              'assets/images/done.gif',
-                                              //filterQuality: FilterQuality.low,
-                                            ),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                  child: Text('OK'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  })
-                                            ],
-                                          );
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Material(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.red,
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.05,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(10),
+                                    focusColor: Colors.red,
+                                    splashColor: Colors.redAccent,
+                                    child: Center(
+                                        child: toAll? Text(
+                                      'Issue Notice',
+                                      style: TextStyle(color: Colors.white),
+                                    ):Text(
+                                      'Select Audience',
+                                      style: TextStyle(color: Colors.white),
+                                    )),
+                                    onTap: () {
+                                      notice.author = model.currentUser.email;
+                                      try {
+                                        model.fToUp
+                                            .forEach((fileName, filePath) {
+                                          notice.files
+                                              .add(p.extension(filePath));
                                         });
-                                  } catch (e) {
-                                    urls = ['error'];
-                                  }
-                                }
-                              },
-                            )
+                                      } catch (e) {
+                                        //print(e);
+                                      }
+
+                                      if (!toAll) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        test(notice, formKey)));
+                                      } else {
+                                        List urls;
+                                        notice.audience.add('notification');
+                                        //model.handleSubmit(formKey, notice)
+                                        try {
+                                          //var lock = Lock();
+
+                                          notice.timeStamp =
+                                              DateTime.now().toString();
+                                          model.uploadToStorage(
+                                              context,
+                                              _scaffoldKey,
+                                              model.fToUp,
+                                              '${notice.title}-${notice.author}-${notice.timeStamp}');
+
+                                          model.handleSubmit(formKey, notice,'notices');
+                                          Navigator.of(context).pop();
+
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  content: Text('Done'),
+                                                  // Image.asset(
+                                                  //   'assets/images/done.gif',
+                                                  //   //filterQuality: FilterQuality.low,
+                                                  // ),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                        child: Text('OK'),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        })
+                                                  ],
+                                                );
+                                              });
+                                        } catch (e) {
+                                          urls = ['error'];
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -158,7 +195,11 @@ class _newNoticeState extends State<newNotice> {
             child: Icon(Icons.attach_file),
             onPressed: () async {
               model.fToUp.clear();
-              model.fToUp = await model.stageNoticeFiles(FileType.ANY);
+              try {
+                model.fToUp = await model.stageNoticeFiles(FileType.ANY);
+              } catch (e) {
+                print(e);
+              }
             },
           ),
         );

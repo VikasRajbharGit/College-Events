@@ -26,24 +26,32 @@ class FirebaseHandler extends Model {
   var username = 'Username';
   String ppic;
   var email = '';
-  Map<String, String> fToUp;
+  Map<String, String> fToUp = {};
   var imgUrls = new List();
   Map noticeMap = {};
+  var tempList = [];
   notifyListeners();
 
-  void handleSubmit(GlobalKey<FormState> formkey, Notice noticeData) async {
+  Future<String> getImg(event,ext) async {
+    var ref = await storageReference.child('event-${event['title']}-${event['author']}-${event['timeStamp']}-1-$ext').getDownloadURL();
+    notifyListeners();
+    print(ref);
+    return ref;
+  }
+
+  void handleSubmit(GlobalKey<FormState> formkey, var Data, var branch) async {
     final FormState form = formkey.currentState;
+    
     if (form.validate()) {
       form.save();
       var cuser = await _auth.currentUser();
       var uid = cuser.uid;
 
-      await db
-          .collection('notices')
-          .document(noticeData.title)
-          .setData(noticeData.toJson());
+      await db.collection(branch).document(Data.title).setData(Data.toJson());
 
-      form.reset();
+      
+
+      //form.reset();
 
       //databaseReference.push().set(todo.toJson());
     }
@@ -68,6 +76,11 @@ class FirebaseHandler extends Model {
             storageReference.child('$name-$i-${p.extension(filePath)}').putFile(
                   File(filePath),
                 );
+        
+        // uploadTask.onComplete.then((onValue){
+        //   return onValue.ref.getDownloadURL();
+        // });
+       
         i++;
         //final StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
         //notifyListeners();

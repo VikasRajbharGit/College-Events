@@ -60,7 +60,9 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           // appBarTheme: AppBarTheme(color: Colors.grey[900]),
-          // canvasColor: Colors.black,
+          canvasColor: Color(0xffeeeeee),
+          appBarTheme: AppBarTheme(color:Color(0xffeeeeee),elevation: 0,textTheme: TextTheme(title: TextStyle(color:Colors.black,fontSize: 30,fontFamily: 'Lexend Deca',fontWeight: FontWeight.w700)),
+          iconTheme:IconThemeData(color: Colors.black)  ),
           fontFamily: 'Lexend Deca',
           primarySwatch: Colors.red,
           //cardColor: Colors.grey[900]

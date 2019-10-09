@@ -19,6 +19,8 @@ export const sendToTopic = functions.firestore
     const noti = snapshot.data();
     console.log('------------>>>>>',noti);
 
+    var audience=noti!.audience;
+
     const payload: admin.messaging.MessagingPayload = {
         notification: {
           title: `${noti!.title}`,
@@ -27,7 +29,12 @@ export const sendToTopic = functions.firestore
           click_action: 'FLUTTER_NOTIFICATION_CLICK' // required only for onResume or onLaunch callbacks
         }
       };
+
+      audience.forEach((audi: any) => {
+        console.log(audi);
+      });
   
+      //return fcm.sendToTopic('notification', payload);
       return fcm.sendToTopic('notification', payload);
 
       

@@ -1,17 +1,24 @@
 import 'package:college_events/model/firebass_scoped_model.dart';
+import 'package:college_events/model/notice_model.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dropdownitems.dart';
 import 'new_notice.dart';
 
 class test extends StatefulWidget {
+  Notice notice;
+  final GlobalKey<FormState> formKey;
+  test(this.notice, this.formKey);
   @override
-  _testState createState() => _testState();
+  _testState createState() => _testState(notice, formKey);
 }
 
 class _testState extends State<test> {
+  Notice notice;
+  final GlobalKey<FormState> formKey;
+  _testState(this.notice, this.formKey);
   var yearChecks = [];
-  var departmentsVal = [];
+  //var departmentsVal = [];
   var depChecks = [];
   var feDivChecks = [];
   var compsDivChecks = [];
@@ -39,6 +46,22 @@ class _testState extends State<test> {
     for (var i = 0; i < compDivs.length; i++) {
       compsDivChecks.add(false);
     }
+  }
+
+  generateTopic(List y, List d, List fe) {
+    List res = [];
+    y.forEach((i) {
+      d.forEach((j) {
+        res.add('notice-$i-$j');
+      });
+    });
+
+    if (fe.length != 0) {
+      res.addAll(fe);
+    }
+
+    print(res);
+    return res;
   }
 
   @override
@@ -86,10 +109,10 @@ class _testState extends State<test> {
                                                 setState(() {
                                                   feDivChecks[index] = val;
                                                   val
-                                                      ? feList
-                                                          .add(feDivs[index])
+                                                      ? feList.add(
+                                                          'notice-${feDivs[index]}')
                                                       : feList.remove(
-                                                          feDivs[index]);
+                                                          'notice-${feDivs[index]}');
                                                 });
                                                 print(feList);
                                               },
@@ -242,12 +265,52 @@ class _testState extends State<test> {
                   //mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text('Next'),
+                    Text('Issue Notice'),
                     Icon(Icons.arrow_forward_ios)
                   ],
                 ),
                 onPressed: () {
                   //model.uploadToStorage(context, _scaffoldKey, model.fToUp);
+                  notice.audience
+                      .addAll(generateTopic(yearList, departmentList, feList));
+                  notice.timeStamp = DateTime.now().toString();
+                  try {
+                    //var lock = Lock();
+                    // notice.author = model.currentUser.email;
+                    // model.fToUp.forEach((fileName, filePath) {
+                    //   notice.files.add(p.extension(filePath));
+                    // });
+                    // notice.audience = 'notification';
+                    // notice.timeStamp =
+                    //     DateTime.now().toString();
+                    model.uploadToStorage(context, _scaffoldKey, model.fToUp,
+                        '${notice.title}-${notice.author}-${notice.timeStamp}');
+
+                    model.handleSubmit(formKey, notice,'notices');
+                    Navigator.of(context).pop();
+
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Image.asset(
+                              'assets/images/done.gif',
+                              //filterQuality: FilterQuality.low,
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  })
+                            ],
+                          );
+                        });
+                  } catch (e) {
+                    //urls = ['error'];
+                    print(e);
+                  }
                 },
               )
             ],

@@ -5,7 +5,7 @@ class Notice{
   String details;
   List files ;
   String author;
-  String audience;
+  List audience;
   String timeStamp;
 
   Notice(this.title,this.details,this.files,this.author,this.audience,this.timeStamp);

@@ -26,18 +26,18 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       builder: (context, child, model) {
         //model.getUser();
         return Opacity(
-          opacity: 0.8,
+          opacity: 1,
           child: Align(
             alignment: Alignment.topLeft,
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.6,
+              //height: MediaQuery.of(context).size.height * 0.7,
               // decoration: BoxDecoration(
               //   borderRadius: BorderRadius.only(bottomRight: Radius.circular(150))
               // ),
               child: ClipRRect(
                 borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(250)),
+                    BorderRadius.only(bottomRight: Radius.circular(20)),
                 child: Drawer(
                   child: ListView(
                     children: <Widget>[
@@ -72,7 +72,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           ],
                         ), //Text('${smodel.uname}'),
                         decoration: BoxDecoration(
-                          color: Colors.red[400],
+                          color: Color(0xffe0e0e0e0),
                         ),
                       ),
                       ListTile(
