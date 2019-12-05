@@ -27,10 +27,22 @@ class FirebaseHandler extends Model {
   String ppic;
   var email = '';
   Map<String, String> fToUp = {};
+  File eventImage;
   var imgUrls = new List();
   Map noticeMap = {};
   var tempList = [];
+  var bookmarks=[];
+  var authority;
   notifyListeners();
+
+  bookMark(data,type){
+    data.addAll({'type':type});
+    db.collection('users').document(currentUser.uid).collection('bookmarks').document(data['title']).setData(data);
+  }
+
+  delBookMark(title){
+    db.collection('users').document(currentUser.uid).collection('bookmarks').document(title).delete();
+  }
 
   Future<String> getImg(event,ext) async {
     var ref = await storageReference.child('event-${event['title']}-${event['author']}-${event['timeStamp']}-1-$ext').getDownloadURL();
@@ -122,13 +134,36 @@ class FirebaseHandler extends Model {
 
     final FirebaseUser user = await _auth.signInWithCredential(credential);
     print('Signed In as ----> ${user.displayName}');
+    var authority='user';
     db.enablePersistence(true);
     if (user != null) {
       currentUser = user;
       username = user.displayName;
+    
+    //var topics=[];
+    var ref =  db
+              .collection('users')
+              .document(currentUser.uid)
+              .collection('info')
+              .snapshots()
+              .listen((res) {
+            //print(res.documents[0].data);
+            var t = res.documents.asMap();
+            authority=t[0].data['authority'];
+            var temp=t[0].data['subscriptions'];
+            print(temp);
+            
+            // temp.forEach((val) {
+            //   topics.add(val);
+            // });
+            saveDeviceToken(temp);
+            //print(model.bookmarks);
 
-      notifyListeners();
+            //print(model.bookmarks[0]);
+          });
+      
     }
+    
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => home()),
@@ -136,6 +171,9 @@ class FirebaseHandler extends Model {
 
     //return user;
   }
+
+
+  
 
   gSignOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -178,7 +216,7 @@ class FirebaseHandler extends Model {
     AppBuilder.of(context).rebuild();
   }
 
-  saveDeviceToken() async {
+  saveDeviceToken(List topics) async {
     // Get the token for this device
     String fcmToken = await _fcm.getToken();
 
@@ -189,13 +227,20 @@ class FirebaseHandler extends Model {
           .document(currentUser.uid)
           .collection('tokens')
           .document(fcmToken);
-      var f = _fcm.subscribeToTopic('notification');
-      print('------------------>>>$f');
+      topics.forEach((topic){
+        var f = _fcm.subscribeToTopic(topic);
+        print('------------------>>>$f');
+      });
+      
+      
       await tokens.setData({
         'token': fcmToken,
         'createdAt': FieldValue.serverTimestamp(), // optional
-        'platform': Platform.operatingSystem // optional
+        'platform': Platform.operatingSystem, // optional
+        'topics':topics
       });
     }
   }
 }
+
+

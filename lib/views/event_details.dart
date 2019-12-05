@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,22 @@ class EventsDetails extends StatelessWidget {
                     //title: Text('Event',style: TextStyle(color: Colors.black),),
                     background: event['files'].length == 0
                         ? Image.asset('assets/images/valley.jpg')
-                        : Image.network(event['files'][0], fit: BoxFit.fill),
+                        : CachedNetworkImage(
+                            imageUrl: event['files'][0],
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                    //Image.network(event['files'][0], fit: BoxFit.fill),
                   ),
                 )
               ];
@@ -33,13 +49,20 @@ class EventsDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Padding(padding: EdgeInsets.all(10),),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                ),
                 Container(
-                  child: Text(
+                    child: Column(children: <Widget>[
+                  Text(
                     event['title'],
                     style: TextStyle(fontSize: 38),
                   ),
-                ),
+                  Text(
+                    'Posted by:${event['author']}',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ])),
                 Padding(
                   padding: EdgeInsets.all(2),
                 ),
@@ -73,15 +96,12 @@ class EventsDetails extends StatelessWidget {
               var i = 1;
               var dio = Dio();
               try {
-                var f2 =
-                      'event-${event['title']}-$i-${DateTime.now().day}.jpg';
-                  
-                  
+                var f2 = 'event-${event['title']}-$i-${DateTime.now().day}.jpg';
 
-                  var dir = '/storage/emulated/0/Evento';
+                var dir = '/storage/emulated/0/Evento';
 
-                  Response response = await dio.download(
-                      '${event['files']}', '/storage/emulated/0/Evento/$f2');
+                Response response = await dio.download(
+                    '${event['files'][0]}', '/storage/emulated/0/Evento/$f2');
                 showDialog(
                     context: context,
                     builder: (context) {

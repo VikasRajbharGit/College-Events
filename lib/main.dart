@@ -21,20 +21,30 @@ void main() async {
 
   bool loggedIn = false;
   bool registered = false;
+  var authority='user';
   FirebaseUser mcurrentUser;
   mcurrentUser = await _auth.currentUser();
   if (mcurrentUser != null) {
     loggedIn = true;
-    // var ref = await Firestore.instance
-    //     .collection('users')
-    //     .document(mcurrentUser.uid)
-    //     .get()
-    //     .then((results) {
-    //   registered = results.exists;
-    // });
+    var ref = await Firestore.instance
+        .collection('users')
+        .document(mcurrentUser.uid)
+        .collection('info')
+        .document('info')
+        .get()
+        .then((results) {
+        //print('----->>>${results.data}');
+        
+      registered = results.exists;
+      if(registered){
+        authority=results.data['authority'];
+        // print('----->><<${registered}');
+        // print('----->><<$authority');
+      }
+    });
   }
   fcmHandler();
-  runApp(MyApp(loggedIn, registered));
+  runApp(MyApp(loggedIn, registered,authority));
 }
 
 class MyApp extends StatelessWidget {
@@ -42,9 +52,10 @@ class MyApp extends StatelessWidget {
 
   bool loggedIn;
   bool registered;
+  var authority;
   final FirebaseHandler _model = new FirebaseHandler();
   
-  MyApp(this.loggedIn, this.registered);
+  MyApp(this.loggedIn, this.registered, this.authority);
 
   // This widget is the root of your application.
   @override
@@ -53,9 +64,16 @@ class MyApp extends StatelessWidget {
       model: _model,
       child: AppBuilder(
         builder: (context){
+          _model.authority=authority;
           // _model.getTheme(context);
           return MaterialApp(
-        darkTheme: ThemeData(canvasColor: Colors.black,brightness: Brightness.dark),
+        darkTheme: ThemeData(canvasColor: Color(0xff222831),brightness: Brightness.dark,fontFamily: 'Lexend Deca',primarySwatch: Colors.green,accentColor: Color(0xfff6c90e),
+        appBarTheme: AppBarTheme(color:Color(0xff303841),elevation: 0,textTheme: TextTheme(title: TextStyle(color:Colors.white,fontSize: 30,fontFamily: 'Lexend Deca',fontWeight: FontWeight.w700)),
+        ),
+        cardTheme: CardTheme(clipBehavior: Clip.antiAliasWithSaveLayer),
+        cardColor: Color(0xff303841),
+        iconTheme: IconThemeData(color: Colors.yellowAccent)
+        ),
         themeMode: _model.tm,
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -73,7 +91,7 @@ class MyApp extends StatelessWidget {
             ? login()
             : (!registered
                 ? home()
-                : login()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
+                : home()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
       );
         },
       )

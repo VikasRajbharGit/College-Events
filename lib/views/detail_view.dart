@@ -89,8 +89,10 @@ class DetailsView extends StatelessWidget {
                 notice['files'].forEach((val) async {
                   // print(
                   //     '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$i-$val');
+                  // var f =
+                  //     '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$i-$val';
                   var f =
-                      '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$i-$val';
+                      '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$val';
                   var f2 = '${notice['title']}-$i-${DateTime.now().day}.$val';
                   i++;
                   var ref =

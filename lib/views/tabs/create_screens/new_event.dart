@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -175,7 +175,7 @@ class _NewEventState extends State<NewEvent> {
                                     splashColor: Colors.redAccent,
                                     child: Center(
                                         child: Text(
-                                      'Issue Notice',
+                                      'Publish Event',
                                       style: TextStyle(color: Colors.white),
                                     )),
                                     onTap: () {
@@ -191,18 +191,29 @@ class _NewEventState extends State<NewEvent> {
                                       // } catch (e) {
                                       //   //print(e);
                                       // }
-                                      final StorageReference storageReference =
+                                      if(model.eventImage!=null){
+                                        final StorageReference storageReference =
                                           FirebaseStorage.instance.ref();
-                                      var k = model.fToUp.keys.toList();
-                                      var f = model.fToUp[k[0]];
+                                      //var k = model.fToUp.keys.toList();
+                                      //var f = model.fToUp[k[0]];
 
+                                      var x = model.eventImage.path;
                                       final StorageUploadTask uploadTask =
                                           storageReference
                                               .child(
-                                                  'event-${event.title}-${event.author}-${event.timeStamp}-${p.extension(f)}')
+                                                  'event-${event.title}-${event.author}-${event.timeStamp}-${p.extension(x)}')
                                               .putFile(
-                                                File(f),
+                                                model.eventImage,
                                               );
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          });
                                       uploadTask.onComplete
                                           .then((onValue) async {
                                         var temp =
@@ -211,8 +222,27 @@ class _NewEventState extends State<NewEvent> {
 
                                         model.handleSubmit(
                                             formKey, event, 'events');
+                                        model.eventImage=null;
+                                        Navigator.of(context).pop();
                                         Navigator.of(context).pop();
                                       });
+                                      }
+                                      else{
+                                        showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          });
+                                        model.handleSubmit(
+                                            formKey, event, 'events');
+                                        model.eventImage=null;
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      }
 
                                       // model.uploadToStorage(
                                       //     context,
@@ -221,25 +251,25 @@ class _NewEventState extends State<NewEvent> {
                                       //     'event-${event.title}-${event.author}-${event.timeStamp}');
                                       // model.handleSubmit(formKey, event,'events');
 
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              content: Text("Posting, press OK"),
-                                              // Image.asset(
-                                              //   'assets/images/done.gif',
-                                              //   //filterQuality: FilterQuality.low,
-                                              // ),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                    child: Text('OK'),
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    })
-                                              ],
-                                            );
-                                          });
+                                      // showDialog(
+                                      //     context: context,
+                                      //     builder: (context) {
+                                      //       return AlertDialog(
+                                      //         content: Text("Posting, press OK"),
+                                      //         // Image.asset(
+                                      //         //   'assets/images/done.gif',
+                                      //         //   //filterQuality: FilterQuality.low,
+                                      //         // ),
+                                      //         actions: <Widget>[
+                                      //           FlatButton(
+                                      //               child: Text('OK'),
+                                      //               onPressed: () {
+                                      //                 Navigator.of(context)
+                                      //                     .pop();
+                                      //               })
+                                      //         ],
+                                      //       );
+                                      //     });
                                     },
                                   ),
                                 ),
@@ -256,7 +286,16 @@ class _NewEventState extends State<NewEvent> {
             child: Icon(Icons.attach_file),
             onPressed: () async {
               model.fToUp.clear();
-              model.fToUp = await model.stageNoticeFiles(FileType.IMAGE);
+              //model.fToUp = await model.stageNoticeFiles(FileType.IMAGE);
+              Future<File> img = ImagePicker.pickImage(
+                      source: ImageSource.gallery,
+                      maxHeight: 400,
+                      maxWidth: 500)
+                  .then((res) {
+                model.eventImage = res;
+                return res;
+              });
+              //model.eventImage=await img;
             },
           ),
         );

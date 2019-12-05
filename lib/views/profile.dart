@@ -4,12 +4,12 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'drawer.dart';
 import 'package:share/share.dart';
-import 'package:simple_share/simple_share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 import 'package:http/http.dart' show get;
 import 'package:file_picker/file_picker.dart';
+
 
 class Profile extends StatefulWidget {
   @override
@@ -86,7 +86,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                       ),
                       RaisedButton(
                         onPressed: () {
-                          model.saveDeviceToken();
+                          model.saveDeviceToken(['notices']);
                         },
                         child: Text('Generate Token'),
                       ),
@@ -113,12 +113,13 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                                 return BottomSheet(
                                   elevation: 10,
                                   animationController: _animationController,
+                                  enableDrag: false,
                                   builder: (context1) {
                                     return Container(
                                         child: Container(
-                                      height: 500,
+                                      height: 400,
                                       color: Colors.red,
-                                      child: Text('Hello'),
+                                      
                                     ) //Image.asset('assets/images/load.gif'),
                                         );
                                   },
@@ -130,7 +131,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                               context: context1,
                             );
                           },
-                          child: Text('Upload image')),
+                          child: Text('bottomsheet')),
                       Expanded(
                         child: ListView.builder(
                           itemCount: model.imgUrls.length,
@@ -163,7 +164,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
     var dir = '/storage/emulated/0/Evento';
     File file = new File(join(dir, 'imagetest2.png'));
     file.writeAsBytesSync(img);
-    final uri = Uri.file('/storage/emulated/0/Evento/imagetest2.png');
-    SimpleShare.share(uri: uri.toString(), title: 'testing', msg: 'Test');
+    // final uri = Uri.file('/storage/emulated/0/Evento/imagetest2.png');
+    // SimpleShare.share(uri: uri.toString(), title: 'testing', msg: 'Test');
   }
 }

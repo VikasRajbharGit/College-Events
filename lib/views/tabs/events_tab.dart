@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:college_events/views/tabs/create_screens/new_event.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'base_tab.dart';
 import '../detail_view.dart';
 import '../event_details.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 CustomTab eventsTab = CustomTab(
     appBarTitle: 'Events',
@@ -14,9 +19,13 @@ CustomTab eventsTab = CustomTab(
       builder: (BuildContext context) {
         return ScopedModelDescendant<FirebaseHandler>(
             builder: (context, child, model) {
+          //print(model.bookmarks[0].data);
           return Center(
             child: StreamBuilder<QuerySnapshot>(
-                stream: model.db.collection('events').snapshots(),
+                stream: model.db
+                    .collection('events')
+                    .orderBy('timeStamp', descending: true)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var snap = snapshot.data.documents.asMap();
@@ -24,13 +33,26 @@ CustomTab eventsTab = CustomTab(
                     return ListView.builder(
                       itemCount: snap.length,
                       itemBuilder: (_, index) {
-                        getImg() async {
-                          return await Image.network(
-                            '${snap[index].data['files'][0]}',
-                            fit: BoxFit.fill,
-                            width: MediaQuery.of(context).size.width * 0.95,
-                            height: MediaQuery.of(context).size.height * 0.25,
-                          );
+                        var bm;
+                        getImg() {
+                          try {
+                            return CachedNetworkImage(
+                              fadeInCurve: Curves.easeIn,
+                              fadeInDuration: Duration(milliseconds: 300),
+                              fadeOutCurve: Curves.bounceOut,
+                              fadeOutDuration: Duration(milliseconds: 300),
+                              alignment: Alignment.center,
+                              imageUrl: snap[index].data['files'][0],
+                              placeholder: (context, url) => Center(
+                                  child: new Image.asset(
+                                      'assets/images/load.gif')),
+                              errorWidget: (context, url, error) =>
+                                  new Icon(Icons.error),
+                              fit: BoxFit.fill,
+                            );
+                          } catch (e) {
+                            return Image.asset('assets/images/valley.jpg');
+                          }
                         }
 
                         return GestureDetector(
@@ -42,6 +64,18 @@ CustomTab eventsTab = CustomTab(
                                       EventsDetails(snap[index].data),
                                 ));
                           },
+                          onDoubleTap: () {
+                            model.bookMark(snap[index].data, 'event');
+                            showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) {
+                                  return Center(
+                                    child:
+                                        Image.asset('assets/images/source.gif'),
+                                  );
+                                });
+                          },
                           child: Card(
                             elevation: 15,
                             shape: RoundedRectangleBorder(
@@ -49,59 +83,31 @@ CustomTab eventsTab = CustomTab(
                             margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                             child: Container(
                                 //height: MediaQuery.of(context).size.height * 0.25,
-                                //width: MediaQuery.of(context).size.width * 0.8,
+                                //width: MediaQuery.of(context).size.width * 0.95,
                                 child: Hero(
-                                  tag: snap[index].data['title'],
-                                                                  child: Stack(
-                              children: <Widget>[
+                              tag: snap[index].data['title'],
+                              child: Stack(
+                                children: <Widget>[
                                   ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: FutureBuilder(
-                                          future: getImg(),
-                                          initialData: Image.asset('assets/images/valley.jpg'),
-                                          builder: (context, snapshot) {
-                                            return snapshot.data;
-                                            // if (snapshot.connectionState ==
-                                            //     ConnectionState.done) {
-                                            //   // if (snapshot.hasError) {
-                                            //   //   return Image.asset(
-                                            //   //       'assets/images/valley.jpg');
-                                            //   // } else {
-                                            //   //   return snapshot.data;
-                                            //   // }
-                                              
-                                            //   return snapshot.data;
-                                            // } else {
-                                            //   return Image.asset(
-                                            //     'assets/images/load.gif',
-                                            //     fit: BoxFit.scaleDown,
-                                            //     width: MediaQuery.of(context)
-                                            //             .size
-                                            //             .width *
-                                            //         0.95,
-                                            //     height: MediaQuery.of(context)
-                                            //             .size
-                                            //             .height *
-                                            //         0.25,
-                                            //   );
-                                            // }
-                                            //return snapshot.data;
-                                          }) //Image.asset(
-                                      //'assets/images/valley.jpg',
-
-                                      // width: MediaQuery.of(context).size.width*0.8 ,
-                                      // height: MediaQuery.of(context).size.height * 0.01,
-                                      // fit: BoxFit.fill,
-                                      //),
-                                      ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.25,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.95,
+                                        child: getImg()),
+                                  ),
                                   Stack(
                                     children: <Widget>[
                                       Container(
                                         height:
                                             MediaQuery.of(context).size.height *
                                                 0.25,
-                                        width: MediaQuery.of(context).size.width *
-                                            0.95,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.95,
                                         decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                                 begin: Alignment.topCenter,
@@ -120,6 +126,10 @@ CustomTab eventsTab = CustomTab(
                                                 BorderRadius.circular(10)),
                                       ),
                                       Positioned(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.9,
                                           bottom: 10,
                                           left: 5,
                                           child: Text(
@@ -129,6 +139,30 @@ CustomTab eventsTab = CustomTab(
                                                 fontSize: 25),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
+                                          )),
+                                      Positioned(
+                                          right: 20,
+                                          bottom: 20,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              model.bookmarks.contains(
+                                                      snap[index].data['title'])
+                                                  ? model.delBookMark(
+                                                      snap[index].data['title'])
+                                                  : model.bookMark(
+                                                      snap[index].data,
+                                                      'event');
+                                            },
+                                            child: model.bookmarks.contains(
+                                                    snap[index].data['title'])
+                                                ? Icon(
+                                                    Icons.bookmark,
+                                                    color: Colors.white,
+                                                  )
+                                                : Icon(
+                                                    Icons.bookmark_border,
+                                                    color: Colors.white,
+                                                  ),
                                           ))
                                     ],
                                   ),
@@ -141,9 +175,9 @@ CustomTab eventsTab = CustomTab(
                                   //     style: TextStyle(fontSize: 30),
                                   //   ),
                                   // )
-                              ],
-                            ),
-                                )),
+                                ],
+                              ),
+                            )),
                           ),
                         );
                       },
@@ -156,7 +190,14 @@ CustomTab eventsTab = CustomTab(
         });
       },
     ),
-    floatingActionButton: Builder(builder: (context) {
+    floatingActionButton: ScopedModelDescendant<FirebaseHandler>(
+        builder: (context, child, model) {
+      return fab(model);
+    }));
+
+fab(model) {
+  if (model.authority == 'moderator' || model.authority == 'teacher') {
+    return Builder(builder: (context) {
       return FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -164,4 +205,9 @@ CustomTab eventsTab = CustomTab(
               MaterialPageRoute(builder: (BuildContext context) => NewEvent()));
         },
       );
-    }));
+    });
+  }
+  else {
+    return SizedBox(height: 10,width: 10,);
+  }
+}
