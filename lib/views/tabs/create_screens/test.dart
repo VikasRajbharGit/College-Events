@@ -293,10 +293,7 @@ class _testState extends State<test> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            content: Image.asset(
-                              'assets/images/done.gif',
-                              //filterQuality: FilterQuality.low,
-                            ),
+                            content: Text('Done'),
                             actions: <Widget>[
                               FlatButton(
                                   child: Text('OK'),

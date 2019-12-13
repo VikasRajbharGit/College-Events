@@ -20,6 +20,23 @@ class DetailsView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(" ${notice['title']}"),
+            actions: <Widget>[
+              notice['author'] == model.currentUser.email
+                  ? IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        model.db
+                            .collection('notices')
+                            .document(notice['title'])
+                            .delete();
+                        Navigator.pop(context);
+                      },
+                    )
+                  : SizedBox(
+                      width: 5,
+                      height: 5,
+                    )
+            ],
           ),
           body: CustomScrollView(slivers: [
             SliverPersistentHeader(
@@ -92,15 +109,15 @@ class DetailsView extends StatelessWidget {
                   // var f =
                   //     '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$i-$val';
                   var f =
-                      '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$val';
-                  var f2 = '${notice['title']}-$i-${DateTime.now().day}.$val';
+                      '${notice['title']}-${notice['author']}-${notice['timeStamp']}-$i$val';
+                  var f2 = '${notice['title']}-$i-${DateTime.now().day}$val';
                   i++;
                   var ref =
                       await model.storageReference.child(f).getDownloadURL();
 
                   var dir = '/storage/emulated/0/Evento';
 
-                  Response response = await dio.download(
+                  Response response =   await dio.download(
                       '$ref', '/storage/emulated/0/Evento/$f2');
                 });
                 showDialog(

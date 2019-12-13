@@ -94,10 +94,12 @@ CustomTab notificationsTab = CustomTab(
                                                 ? Icon(
                                                     Icons.bookmark,
                                                     color: Colors.white,
+                                                    size: 35,
                                                   )
                                                 : Icon(
                                                     Icons.bookmark_border,
                                                     color: Colors.white,
+                                                    size: 35,
                                                   ),
                                           ),
                                         ),

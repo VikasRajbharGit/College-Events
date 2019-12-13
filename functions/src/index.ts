@@ -32,10 +32,11 @@ export const sendToTopic = functions.firestore
 
       audience.forEach((audi: any) => {
         console.log(audi);
+        return fcm.sendToTopic(audi, payload);
       });
   
       //return fcm.sendToTopic('notification', payload);
-      return fcm.sendToTopic('notification', payload);
+      //return fcm.sendToTopic('notification', payload);
 
       
     });

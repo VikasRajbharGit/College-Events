@@ -156,6 +156,7 @@ CustomTab bookmarksTab = CustomTab(
                                               child: Icon(
                                                       Icons.bookmark,
                                                       color: Colors.white,
+                                                      size: 35,
                                                     )
                                             ))
                                       ],
@@ -239,6 +240,7 @@ CustomTab bookmarksTab = CustomTab(
                                             child: Icon(
                                               Icons.bookmark,
                                               color: Colors.white,
+                                              size: 35,
                                             ),
                                           ),
                                         ),

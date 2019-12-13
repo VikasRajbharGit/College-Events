@@ -142,7 +142,7 @@ CustomTab eventsTab = CustomTab(
                                           )),
                                       Positioned(
                                           right: 20,
-                                          bottom: 20,
+                                          bottom: 15,
                                           child: GestureDetector(
                                             onTap: () {
                                               model.bookmarks.contains(
@@ -158,10 +158,12 @@ CustomTab eventsTab = CustomTab(
                                                 ? Icon(
                                                     Icons.bookmark,
                                                     color: Colors.white,
+                                                    size: 35,
                                                   )
                                                 : Icon(
                                                     Icons.bookmark_border,
                                                     color: Colors.white,
+                                                    size: 35,
                                                   ),
                                           ))
                                     ],

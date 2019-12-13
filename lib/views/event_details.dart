@@ -18,6 +18,23 @@ class EventsDetails extends StatelessWidget {
                 (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
                 SliverAppBar(
+                  actions: <Widget>[
+                    event['author'] == model.currentUser.email
+                  ? IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        model.db
+                            .collection('events')
+                            .document(event['title'])
+                            .delete();
+                        Navigator.pop(context);
+                      },
+                    )
+                  : SizedBox(
+                      width: 5,
+                      height: 5,
+                    )
+                  ],
                   pinned: true,
                   floating: false,
                   expandedHeight: 250,

@@ -51,6 +51,7 @@ class _NewEventState extends State<NewEvent> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: TextFormField(
+                                validator: (val)=> val.length<1 ? 'Can not be empty':null,
                                 decoration: InputDecoration(
                                     hintText: 'Title',
                                     border: InputBorder.none),
@@ -72,6 +73,7 @@ class _NewEventState extends State<NewEvent> {
                                   ),
                                   borderRadius: BorderRadius.circular(20)),
                               child: TextFormField(
+                                validator: (val)=> val.length<1 ? 'Can not be empty':null,
                                 decoration: InputDecoration(
                                   hintText: 'Description',
                                   border: InputBorder.none,
@@ -124,6 +126,7 @@ class _NewEventState extends State<NewEvent> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: TextFormField(
+                                validator: (val)=> val.length<1 ? 'Can not be empty':null,
                                 decoration: InputDecoration(
                                     hintText: 'Committee',
                                     border: InputBorder.none),
@@ -147,6 +150,7 @@ class _NewEventState extends State<NewEvent> {
                               ),
                               child: TextFormField(
                                 keyboardType: TextInputType.phone,
+                                validator: (val)=> val.length!=10 ? 'Not valid Number':null,
                                 decoration: InputDecoration(
                                     hintText: 'Contact',
                                     border: InputBorder.none),
@@ -163,7 +167,7 @@ class _NewEventState extends State<NewEvent> {
                               child: Material(
                                 borderRadius: BorderRadius.circular(10),
                                 //type: MaterialType.transparency,
-                                color: Colors.red,
+                                color: Theme.of(context).accentColor,
                                 child: Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.3,
@@ -179,7 +183,8 @@ class _NewEventState extends State<NewEvent> {
                                       style: TextStyle(color: Colors.white),
                                     )),
                                     onTap: () {
-                                      event.category = categoryVal;
+                                      if(formKey.currentState.validate()){
+                                        event.category = categoryVal;
                                       event.timeStamp =
                                           DateTime.now().toString();
                                       // try {
@@ -201,7 +206,7 @@ class _NewEventState extends State<NewEvent> {
                                       final StorageUploadTask uploadTask =
                                           storageReference
                                               .child(
-                                                  'event-${event.title}-${event.author}-${event.timeStamp}-${p.extension(x)}')
+                                                  'event-${event.title}-${event.author}-${event.timeStamp}${p.extension(x)}')
                                               .putFile(
                                                 model.eventImage,
                                               );
@@ -244,6 +249,7 @@ class _NewEventState extends State<NewEvent> {
                                         Navigator.of(context).pop();
                                       }
 
+                                      }
                                       // model.uploadToStorage(
                                       //     context,
                                       //     _scaffoldKey,

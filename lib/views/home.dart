@@ -61,7 +61,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
           //print(model.bookmarks.length);
         }
 
-        //getBookmark();
+        getBookmark();
         var height = MediaQuery.of(context).size.height;
         return AnimatedBuilder(
           animation: _controller,

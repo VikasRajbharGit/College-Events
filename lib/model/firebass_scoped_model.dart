@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:college_events/views/registeration.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,21 +32,34 @@ class FirebaseHandler extends Model {
   var imgUrls = new List();
   Map noticeMap = {};
   var tempList = [];
-  var bookmarks=[];
+  var bookmarks = [];
   var authority;
   notifyListeners();
 
-  bookMark(data,type){
-    data.addAll({'type':type});
-    db.collection('users').document(currentUser.uid).collection('bookmarks').document(data['title']).setData(data);
+  bookMark(data, type) {
+    data.addAll({'type': type});
+    db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('bookmarks')
+        .document(data['title'])
+        .setData(data);
   }
 
-  delBookMark(title){
-    db.collection('users').document(currentUser.uid).collection('bookmarks').document(title).delete();
+  delBookMark(title) {
+    db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('bookmarks')
+        .document(title)
+        .delete();
   }
 
-  Future<String> getImg(event,ext) async {
-    var ref = await storageReference.child('event-${event['title']}-${event['author']}-${event['timeStamp']}-1-$ext').getDownloadURL();
+  Future<String> getImg(event, ext) async {
+    var ref = await storageReference
+        .child(
+            'event-${event['title']}-${event['author']}-${event['timeStamp']}-1-$ext')
+        .getDownloadURL();
     notifyListeners();
     print(ref);
     return ref;
@@ -53,15 +67,13 @@ class FirebaseHandler extends Model {
 
   void handleSubmit(GlobalKey<FormState> formkey, var Data, var branch) async {
     final FormState form = formkey.currentState;
-    
+
     if (form.validate()) {
       form.save();
       var cuser = await _auth.currentUser();
       var uid = cuser.uid;
 
       await db.collection(branch).document(Data.title).setData(Data.toJson());
-
-      
 
       //form.reset();
 
@@ -85,14 +97,14 @@ class FirebaseHandler extends Model {
       var i = 1;
       filePaths.forEach((fileName, filePath) async {
         final StorageUploadTask uploadTask =
-            storageReference.child('$name-$i-${p.extension(filePath)}').putFile(
+            storageReference.child('$name-$i${p.extension(filePath)}').putFile(
                   File(filePath),
                 );
-        
+
         // uploadTask.onComplete.then((onValue){
         //   return onValue.ref.getDownloadURL();
         // });
-       
+
         i++;
         //final StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
         //notifyListeners();
@@ -117,14 +129,18 @@ class FirebaseHandler extends Model {
   }
 
   getUser() async {
-    currentUser = await _auth.currentUser();
-    username = currentUser.displayName;
-    ppic = currentUser.photoUrl;
-    email = currentUser.email;
-    notifyListeners();
+    try {
+      currentUser = await _auth.currentUser();
+      username = currentUser.displayName;
+      ppic = currentUser.photoUrl;
+      email = currentUser.email;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 
-  gSignIn(BuildContext context) async {
+  Future<FirebaseUser> gSignIn(BuildContext context) async {
     GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
@@ -134,46 +150,62 @@ class FirebaseHandler extends Model {
 
     final FirebaseUser user = await _auth.signInWithCredential(credential);
     print('Signed In as ----> ${user.displayName}');
-    var authority='user';
+    var authority = 'user';
     db.enablePersistence(true);
     if (user != null) {
       currentUser = user;
       username = user.displayName;
-    
-    //var topics=[];
-    var ref =  db
-              .collection('users')
-              .document(currentUser.uid)
-              .collection('info')
-              .snapshots()
-              .listen((res) {
-            //print(res.documents[0].data);
-            var t = res.documents.asMap();
-            authority=t[0].data['authority'];
-            var temp=t[0].data['subscriptions'];
-            print(temp);
-            
-            // temp.forEach((val) {
-            //   topics.add(val);
-            // });
-            saveDeviceToken(temp);
-            //print(model.bookmarks);
+      print('-------xxx ${user.uid}');
+      var reg = await Firestore.instance
+          .collection('users')
+          .document(user.uid).collection('info').document('info')
+          .get()
+          .then((results) {
+          print('====='+results.data.toString());
+        registered = results.exists;
+        print(registered);
+      });
+      if (registered) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => home()),
+        );
+      } else {
+        print('----->>$registered');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => register()),
+        );
+      }
 
-            //print(model.bookmarks[0]);
-          });
-      
+      //var topics=[];
+      if (registered) {
+        var ref = db
+            .collection('users')
+            .document(currentUser.uid)
+            .collection('info')
+            .snapshots()
+            .listen((res) {
+          //print(res.documents[0].data);
+          var t = res.documents.asMap();
+          authority = t[0].data['authority'];
+          var temp = t[0].data['subscriptions'];
+          print(temp);
+
+          // temp.forEach((val) {
+          //   topics.add(val);
+          // });
+          saveDeviceToken(temp);
+          //print(model.bookmarks);
+
+          //print(model.bookmarks[0]);
+        });
+      }
+      return user;
     }
-    
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => home()),
-    );
 
     //return user;
   }
-
-
-  
 
   gSignOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -227,20 +259,17 @@ class FirebaseHandler extends Model {
           .document(currentUser.uid)
           .collection('tokens')
           .document(fcmToken);
-      topics.forEach((topic){
+      topics.forEach((topic) {
         var f = _fcm.subscribeToTopic(topic);
         print('------------------>>>$f');
       });
-      
-      
+
       await tokens.setData({
         'token': fcmToken,
         'createdAt': FieldValue.serverTimestamp(), // optional
         'platform': Platform.operatingSystem, // optional
-        'topics':topics
+        'topics': topics
       });
     }
   }
 }
-
-

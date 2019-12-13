@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:college_events/views/home.dart';
+import 'package:college_events/views/registeration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
       model: _model,
       child: AppBuilder(
         builder: (context){
+         // _model.registered=registered;
           _model.authority=authority;
           // _model.getTheme(context);
           return MaterialApp(
@@ -72,7 +74,7 @@ class MyApp extends StatelessWidget {
         ),
         cardTheme: CardTheme(clipBehavior: Clip.antiAliasWithSaveLayer),
         cardColor: Color(0xff303841),
-        iconTheme: IconThemeData(color: Colors.yellowAccent)
+        iconTheme: IconThemeData(color: Color(0xfff6c90e))
         ),
         themeMode: _model.tm,
         title: 'Flutter Demo',
@@ -89,9 +91,9 @@ class MyApp extends StatelessWidget {
         ),
         home: !loggedIn
             ? login()
-            : (!registered
+            : (registered
                 ? home()
-                : home()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
+                : register()), //login()//MyHomePage(title: 'Flutter Demo Home Page'),
       );
         },
       )

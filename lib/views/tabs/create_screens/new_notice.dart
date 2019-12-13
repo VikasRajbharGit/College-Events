@@ -50,6 +50,8 @@ class _newNoticeState extends State<newNotice> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: TextFormField(
+                                validator: (val) =>
+                                    val.length < 1 ? 'Can not be empty' : null,
                                 decoration: InputDecoration(
                                     hintText: 'Title',
                                     border: InputBorder.none),
@@ -71,6 +73,8 @@ class _newNoticeState extends State<newNotice> {
                                   ),
                                   borderRadius: BorderRadius.circular(20)),
                               child: TextFormField(
+                                validator: (val) =>
+                                    val.length < 1 ? 'Can not be empty' : null,
                                 decoration: InputDecoration(
                                   hintText: 'Description',
                                   border: InputBorder.none,
@@ -101,10 +105,10 @@ class _newNoticeState extends State<newNotice> {
                               alignment: Alignment.centerLeft,
                               child: Material(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.red,
+                                color: Theme.of(context).accentColor,
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width * 0.3,
+                                      MediaQuery.of(context).size.width * 0.4,
                                   height:
                                       MediaQuery.of(context).size.height * 0.05,
                                   child: InkWell(
@@ -112,13 +116,17 @@ class _newNoticeState extends State<newNotice> {
                                     focusColor: Colors.red,
                                     splashColor: Colors.redAccent,
                                     child: Center(
-                                        child: toAll? Text(
-                                      'Issue Notice',
-                                      style: TextStyle(color: Colors.white),
-                                    ):Text(
-                                      'Select Audience',
-                                      style: TextStyle(color: Colors.white),
-                                    )),
+                                        child: toAll
+                                            ? Text(
+                                                'Issue Notice',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              )
+                                            : Text(
+                                                'Select Audience',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              )),
                                     onTap: () {
                                       notice.author = model.currentUser.email;
                                       try {
@@ -131,52 +139,58 @@ class _newNoticeState extends State<newNotice> {
                                         //print(e);
                                       }
 
-                                      if (!toAll) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        test(notice, formKey)));
-                                      } else {
-                                        List urls;
-                                        notice.audience.add('notification');
-                                        //model.handleSubmit(formKey, notice)
-                                        try {
-                                          //var lock = Lock();
-
-                                          notice.timeStamp =
-                                              DateTime.now().toString();
-                                          model.uploadToStorage(
+                                      if (formKey.currentState.validate()) {
+                                        if (!toAll) {
+                                          Navigator.push(
                                               context,
-                                              _scaffoldKey,
-                                              model.fToUp,
-                                              '${notice.title}-${notice.author}-${notice.timeStamp}');
+                                              MaterialPageRoute(
+                                                  builder: (BuildContext
+                                                          context) =>
+                                                      test(notice, formKey)));
+                                        } else {
+                                          List urls;
+                                          notice.audience.add('notification');
+                                          //model.handleSubmit(formKey, notice)
+                                          try {
+                                            //var lock = Lock();
 
-                                          model.handleSubmit(formKey, notice,'notices');
-                                          Navigator.of(context).pop();
+                                            notice.timeStamp =
+                                                DateTime.now().toString();
+                                            model.uploadToStorage(
+                                                context,
+                                                _scaffoldKey,
+                                                model.fToUp,
+                                                '${notice.title}-${notice.author}-${notice.timeStamp}');
 
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  content: Text('Done'),
-                                                  // Image.asset(
-                                                  //   'assets/images/done.gif',
-                                                  //   //filterQuality: FilterQuality.low,
-                                                  // ),
-                                                  actions: <Widget>[
-                                                    FlatButton(
-                                                        child: Text('OK'),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        })
-                                                  ],
-                                                );
-                                              });
-                                        } catch (e) {
-                                          urls = ['error'];
+                                            
+
+                                            model.handleSubmit(
+                                                formKey, notice, 'notices');
+                                            Navigator.of(context).pop();
+
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    content: Text('Done'),
+                                                    // Image.asset(
+                                                    //   'assets/images/done.gif',
+                                                    //   //filterQuality: FilterQuality.low,
+                                                    // ),
+                                                    actions: <Widget>[
+                                                      FlatButton(
+                                                          child: Text('OK'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          })
+                                                    ],
+                                                  );
+                                                });
+                                          } catch (e) {
+                                            urls = ['error'];
+                                          }
                                         }
                                       }
                                     },

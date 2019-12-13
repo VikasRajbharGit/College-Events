@@ -9,6 +9,7 @@ import 'package:path/path.dart';
 import 'dart:io';
 import 'package:http/http.dart' show get;
 import 'package:file_picker/file_picker.dart';
+import 'registeration.dart';
 
 
 class Profile extends StatefulWidget {
@@ -86,9 +87,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                       ),
                       RaisedButton(
                         onPressed: () {
-                          model.saveDeviceToken(['notices']);
+                          //model.saveDeviceToken(['notices']);
+                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => register()));
                         },
-                        child: Text('Generate Token'),
+                        child: Text('Register'),
                       ),
                       RaisedButton(
                           onPressed: () async {
