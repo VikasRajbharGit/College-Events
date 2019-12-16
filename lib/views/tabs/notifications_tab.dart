@@ -162,7 +162,7 @@ CustomTab notificationsTab = CustomTab(
     }));
 
 fab(model) {
-  if (model.authority == 'moderator' || model.authority == 'teacher') {
+  if (model.authority == 'teacher') {
     return Builder(builder: (context) {
       return FloatingActionButton(
         child: Icon(Icons.add),

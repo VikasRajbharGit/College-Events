@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
         iconTheme: IconThemeData(color: Color(0xfff6c90e))
         ),
         themeMode: _model.tm,
-        title: 'Flutter Demo',
+        title: 'Evento Alpha 1.0.1',
         theme: ThemeData(
           // appBarTheme: AppBarTheme(color: Colors.grey[900]),
           canvasColor: Color(0xffeeeeee),

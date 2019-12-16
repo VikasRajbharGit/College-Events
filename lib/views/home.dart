@@ -14,7 +14,7 @@ class home extends StatefulWidget {
   _homeState createState() => _homeState();
 }
 
-class _homeState extends State<home> with TickerProviderStateMixin {
+class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
   TabController _tabController;
   List<CustomTab> tabs = [eventsTab, notificationsTab, bookmarksTab];
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -129,6 +129,10 @@ class _homeState extends State<home> with TickerProviderStateMixin {
       },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 
   // var bs=BottomSheet(
   //   animationController: _controller,

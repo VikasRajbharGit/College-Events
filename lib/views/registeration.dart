@@ -12,6 +12,7 @@ class register extends StatefulWidget {
 class _registerState extends State<register> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var info = {
+    'branch':'',
     'college_id': '',
     'div': '',
     'name': '',
@@ -247,12 +248,13 @@ class _registerState extends State<register> {
                                                 
                                               );
                                             });
+                                        info['branch']=branchVal;
                                         info['year'] = yearVal;
                                         info['div'] = divVal;
-                                        info['authority'] = 'teacher';
+                                        info['authority'] = 'student';
                                         var t = generateTopic();
 
-                                        info['subscriptions'] = ['notices', t];
+                                        info['subscriptions'] = ['notice', t];
                                         model.db
                                             .collection('users')
                                             .document(model.currentUser.uid)
@@ -326,11 +328,11 @@ class _registerState extends State<register> {
 
   generateTopic() {
     if (yearVal == year[0]) {
-      return 'notices-$divVal';
+      return 'notice-$divVal';
     } else if (branchVal == departments[0]) {
-      return 'notices-$yearVal-$divVal';
+      return 'notice-$yearVal-$divVal';
     } else {
-      return 'notices-$yearVal-$branchVal';
+      return 'notice-$yearVal-$branchVal';
     }
   }
 }

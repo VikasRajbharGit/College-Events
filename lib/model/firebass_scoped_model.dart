@@ -34,6 +34,7 @@ class FirebaseHandler extends Model {
   var tempList = [];
   var bookmarks = [];
   var authority;
+  var profile;
   notifyListeners();
 
   bookMark(data, type) {
@@ -158,10 +159,12 @@ class FirebaseHandler extends Model {
       print('-------xxx ${user.uid}');
       var reg = await Firestore.instance
           .collection('users')
-          .document(user.uid).collection('info').document('info')
+          .document(user.uid)
+          .collection('info')
+          .document('info')
           .get()
           .then((results) {
-          print('====='+results.data.toString());
+        print('=====' + results.data.toString());
         registered = results.exists;
         print(registered);
       });
@@ -184,12 +187,13 @@ class FirebaseHandler extends Model {
             .collection('users')
             .document(currentUser.uid)
             .collection('info')
-            .snapshots()
-            .listen((res) {
+            .document('info')
+            .get()
+            .then((res) {
           //print(res.documents[0].data);
-          var t = res.documents.asMap();
-          authority = t[0].data['authority'];
-          var temp = t[0].data['subscriptions'];
+          var t = res.data;
+          authority = t['authority'];
+          var temp = t['subscriptions'];
           print(temp);
 
           // temp.forEach((val) {
@@ -208,14 +212,38 @@ class FirebaseHandler extends Model {
   }
 
   gSignOut(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    await _googleSignIn.signOut();
-    if (tm == ThemeMode.dark) {
-      switchTheme(context);
-    }
-    _fcm.unsubscribeFromTopic('notification');
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (BuildContext context) => login()));
+    var ref = db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('info')
+        .document('info')
+        .get()
+        .then((res) async {
+      //print(res.documents[0].data);
+      var t = res.data;
+      //authority = t[0].data['authority'];
+      var temp = t['subscriptions'];
+      print(temp);
+
+      temp.forEach((val) {
+        _fcm.unsubscribeFromTopic(val);
+      });
+
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => login()));
+
+      await FirebaseAuth.instance.signOut();
+      await _googleSignIn.signOut();
+      if (tm == ThemeMode.dark) {
+        switchTheme(context);
+      }
+      //_fcm.unsubscribeFromTopic('notification');
+      
+      //saveDeviceToken(temp);
+      //print(model.bookmarks);
+
+      //print(model.bookmarks[0]);
+    });
   }
 
   getTheme(context) async {

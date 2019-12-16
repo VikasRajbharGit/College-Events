@@ -3,6 +3,7 @@ import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:path_provider/path_provider.dart';
 
 class EventsDetails extends StatelessWidget {
   Map event;
@@ -112,13 +113,19 @@ class EventsDetails extends StatelessWidget {
             onPressed: () async {
               var i = 1;
               var dio = Dio();
+              String t;
               try {
                 var f2 = 'event-${event['title']}-$i-${DateTime.now().day}.jpg';
+                var dir = getExternalStorageDirectory().then((res)async{
+                  t=res.path;
+                  t=t+'/../../../../Download';
+                  Response response = await dio.download(
+                    '${event['files'][0]}', '$t/$f2');
+                  print(t);
+                });
+                //var dir = '/storage/emulated/0/Evento';
 
-                var dir = '/storage/emulated/0/Evento';
-
-                Response response = await dio.download(
-                    '${event['files'][0]}', '/storage/emulated/0/Evento/$f2');
+                
                 showDialog(
                     context: context,
                     builder: (context) {

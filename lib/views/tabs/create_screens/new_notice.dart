@@ -149,7 +149,7 @@ class _newNoticeState extends State<newNotice> {
                                                       test(notice, formKey)));
                                         } else {
                                           List urls;
-                                          notice.audience.add('notification');
+                                          notice.audience.add('notice');
                                           //model.handleSubmit(formKey, notice)
                                           try {
                                             //var lock = Lock();

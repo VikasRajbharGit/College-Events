@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:path/path.dart' as p;
 import 'package:dio/dio.dart';
@@ -102,6 +103,7 @@ class DetailsView extends StatelessWidget {
             onPressed: () {
               var i = 1;
               var dio = Dio();
+              var t;
               try {
                 notice['files'].forEach((val) async {
                   // print(
@@ -115,10 +117,17 @@ class DetailsView extends StatelessWidget {
                   var ref =
                       await model.storageReference.child(f).getDownloadURL();
 
-                  var dir = '/storage/emulated/0/Evento';
+                  //var dir = '/storage/emulated/0/Evento';
+                  var dir = getExternalStorageDirectory().then((res)async{
+                  t=res.path;
+                  t=t+'/../../../../Download';
+                  Response response = await dio.download(
+                    ref, '$t/$f2');
+                  print(t);
+                });
 
-                  Response response =   await dio.download(
-                      '$ref', '/storage/emulated/0/Evento/$f2');
+                  // Response response =   await dio.download(
+                  //     '$ref', '/storage/emulated/0/Evento/$f2');
                 });
                 showDialog(
                     context: context,

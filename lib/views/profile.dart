@@ -11,7 +11,6 @@ import 'package:http/http.dart' show get;
 import 'package:file_picker/file_picker.dart';
 import 'registeration.dart';
 
-
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
@@ -23,6 +22,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   AnimationController _animationController;
   Animation<double> animation;
   double radius = 0;
+  var profile;
 
   @override
   void initState() {
@@ -48,110 +48,146 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        return Builder(
-          builder: (context) {
-            return Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                title: Text('Profile'),
-              ),
-              body: Builder(
-                builder: (context1) {
-                  return Center(
-                      child: Column(
-                    children: <Widget>[
-                      AnimatedBuilder(
-                        animation: _controller,
-                        builder: (context, widget) {
-                          _controller.forward();
-                          // if (_controller.isCompleted) {
-                          //   _controller.reset();
-                          // }
+        getprofile() async {
+          Map pro = await model.db
+              .collection('users')
+              .document('${model.currentUser.uid}')
+              .collection('info')
+              .document('info')
+              .get()
+              .then((res) {
+            //print(profile);
+            model.profile = res.data;
+            model.notifyListeners();
+            // setState(() {
+            //   model.profile = res.data;
+            // });
+          });
+          return pro;
+        }
 
-                          return GestureDetector(
-                            onLongPress: () {
-                              handle(model);
-                            },
-                            child: CircleAvatar(
-                              backgroundImage: model.ppic == null
-                                  ? AssetImage('assets/images/anim.gif')
-                                  : NetworkImage(model.ppic),
-                              radius: animation.value,
-                            ),
-                          );
-                        },
-                      ),
-                      Text(
-                        model.username,
-                        style: TextStyle(fontSize: 50),
-                      ),
-                      RaisedButton(
-                        onPressed: () {
-                          //model.saveDeviceToken(['notices']);
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => register()));
-                        },
-                        child: Text('Register'),
-                      ),
-                      RaisedButton(
-                          onPressed: () async {
-                            // var storageReference =
-                            //     FirebaseStorage.instance.ref();
-                            // final StorageUploadTask uploadTask =
-                            //     storageReference.child('test.png').putFile(
-                            //           File(
-                            //               '/storage/emulated/0/Evento/imagetest2.png'),
-                            //         );
-                            // var d='not yet';
-                            // var dUrl=uploadTask.onComplete.then((onValue)async{
-                            //   d= await onValue.ref.getDownloadURL();
-                            //   print('--$d');
-                            // });
-                            // print(d);
-                            //Map<String,String> paths = await model.stageNoticeFiles(FileType.IMAGE);
-                            //print('-------xxxxx $paths');
-                            //await model.uploadToStorage(context, _scaffoldKey, paths);
-                            showBottomSheet(
-                              builder: (context) {
-                                return BottomSheet(
-                                  elevation: 10,
-                                  animationController: _animationController,
-                                  enableDrag: false,
-                                  builder: (context1) {
-                                    return Container(
-                                        child: Container(
-                                      height: 400,
-                                      color: Colors.red,
-                                      
-                                    ) //Image.asset('assets/images/load.gif'),
-                                        );
-                                  },
-                                  onClosing: () {
-                                    Navigator.of(context1).pop();
-                                  },
-                                );
-                              },
-                              context: context1,
-                            );
-                          },
-                          child: Text('bottomsheet')),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: model.imgUrls.length,
-                          itemBuilder: (_, index) {
-                            return Image.network(model.imgUrls[index]);
-                          },
-                        ),
-                      )
-                    ],
-                  ));
-                },
-              ),
-              drawer: NavigationDrawer(2, context),
-            );
-          },
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: Text('Profile'),
+          ),
+          body: Center(
+              child: Column(children: <Widget>[
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, widget) {
+                getprofile();
+                _controller.forward();
+                // if (_controller.isCompleted) {
+                //   _controller.reset();
+                // }
+
+                return GestureDetector(
+                  onLongPress: () {
+                    handle(model);
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: model.ppic == null
+                        ? AssetImage('assets/images/anim.gif')
+                        : NetworkImage(model.ppic),
+                    radius: animation.value,
+                  ),
+                );
+              },
+            ),
+            Text(
+              model.username,
+              style: TextStyle(fontSize: 50),
+            ),
+            // RaisedButton(
+            //   onPressed: () {
+            //     //model.saveDeviceToken(['notices']);
+            //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => register()));
+            //   },
+            //   child: Text('Register'),
+            // ),
+            Padding(
+              padding: EdgeInsets.all(
+                  MediaQuery.of(context).size.height * 0.03),
+            ),
+            Card(
+              margin: EdgeInsets.all(15),
+              child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: SingleChildScrollView(
+                    child: prof(model),
+                  )),
+            )
+          ])),
+          drawer: NavigationDrawer(2, context),
         );
       },
     );
+  }
+
+  prof(model) {
+    if (model.profile != null) {
+      return Column(
+        children: <Widget>[
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Name:'),
+                Chip(
+                  label: Text(model.profile['name']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('ID:'),
+                Chip(
+                  label: Text(model.profile['college_id']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('year:'),
+                Chip(
+                  label: Text(model.profile['year']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('branch:'),
+                Chip(
+                  label: Text(model.profile['branch']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('div:'),
+                Chip(
+                  label: Text(model.profile['div']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Roll no.:'),
+                Chip(
+                  label: Text(model.profile['roll_no']),
+                  backgroundColor: Colors.grey,
+                ),
+              ]),
+        ],
+      );
+    } else {
+      return SizedBox(height: 10, width: 10);
+    }
   }
 
   handle(model) async {

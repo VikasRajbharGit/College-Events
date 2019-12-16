@@ -9,7 +9,7 @@ class help extends StatelessWidget {
         title: Text('Help'),
       ),
       body: Center(
-        child: Text('Dial 123456'),
+        child: Text('Version: Alpha 1.0.1'),
       ),
       drawer: NavigationDrawer(4, context),
       
