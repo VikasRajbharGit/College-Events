@@ -164,7 +164,7 @@ class EventsDetails extends StatelessWidget {
                         content: Text('No files Attached '),
                         actions: <Widget>[
                           FlatButton(
-                            child: Text('OK'),
+                            child: SelectableText('OK'),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },

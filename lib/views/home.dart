@@ -33,11 +33,19 @@ class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeep
         curve: Curves.fastLinearToSlowEaseIn, parent: _controller));
   }
 
+ @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    
     _controller.forward();
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
+        //model.getprofile(false);
         model.getTheme(context);
         model.getUser();
         getBookmark() async {

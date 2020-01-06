@@ -211,39 +211,74 @@ class FirebaseHandler extends Model {
     //return user;
   }
 
-  gSignOut(BuildContext context) async {
-    var ref = db
-        .collection('users')
-        .document(currentUser.uid)
-        .collection('info')
-        .document('info')
-        .get()
-        .then((res) async {
-      //print(res.documents[0].data);
-      var t = res.data;
-      //authority = t[0].data['authority'];
-      var temp = t['subscriptions'];
-      print(temp);
-
-      temp.forEach((val) {
-        _fcm.unsubscribeFromTopic(val);
-      });
-
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => login()));
-
-      await FirebaseAuth.instance.signOut();
-      await _googleSignIn.signOut();
-      if (tm == ThemeMode.dark) {
-        switchTheme(context);
+  getprofile(reload) async {
+    if (profile == null || reload) {
+      try {
+        Map pro = await db
+            .collection('users')
+            .document('${currentUser.uid}')
+            .collection('info')
+            .document('info')
+            .get()
+            .then((res) {
+          print('profile');
+          profile = res.data;
+          notifyListeners();
+          // setState(() {
+          //   model.profile = res.data;
+          // });
+        });
+      } catch (e) {
+        print('----////--$e');
       }
-      //_fcm.unsubscribeFromTopic('notification');
-      
-      //saveDeviceToken(temp);
-      //print(model.bookmarks);
+    }
+    //return pro;
+  }
 
-      //print(model.bookmarks[0]);
+  gSignOut(BuildContext context) async {
+    // var ref = db
+    //     .collection('users')
+    //     .document(currentUser.uid)
+    //     .collection('info')
+    //     .document('info')
+    //     .get()
+    //     .then((res) async {
+    //   //print(res.documents[0].data);
+    //   var t = res.data;
+    //   //authority = t[0].data['authority'];
+    //   var temp = t['subscriptions'];
+    //   print(temp);
+
+    //   temp.forEach((val) {
+    //     _fcm.unsubscribeFromTopic(val);
+    //   });
+
+    //   Navigator.pushReplacement(context,
+    //       MaterialPageRoute(builder: (BuildContext context) => login()));
+
+    //   await FirebaseAuth.instance.signOut();
+    //   await _googleSignIn.signOut();
+    //   if (tm == ThemeMode.dark) {
+    //     switchTheme(context);
+    //   }
+    //   //_fcm.unsubscribeFromTopic('notification');
+
+    //   //saveDeviceToken(temp);
+    //   //print(model.bookmarks);
+
+    //   //print(model.bookmarks[0]);
+    // });
+
+    profile['subscriptions'].forEach((val) {
+      _fcm.unsubscribeFromTopic(val);
     });
+    await FirebaseAuth.instance.signOut();
+    await _googleSignIn.signOut();
+    if (tm == ThemeMode.dark) {
+      switchTheme(context);
+    }
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (BuildContext context) => login()));
   }
 
   getTheme(context) async {

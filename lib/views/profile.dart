@@ -48,24 +48,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        getprofile() async {
-          Map pro = await model.db
-              .collection('users')
-              .document('${model.currentUser.uid}')
-              .collection('info')
-              .document('info')
-              .get()
-              .then((res) {
-            //print(profile);
-            model.profile = res.data;
-            model.notifyListeners();
-            // setState(() {
-            //   model.profile = res.data;
-            // });
-          });
-          return pro;
-        }
-
+        
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
@@ -76,7 +59,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
             AnimatedBuilder(
               animation: _controller,
               builder: (context, widget) {
-                getprofile();
+                //getprofile();
                 _controller.forward();
                 // if (_controller.isCompleted) {
                 //   _controller.reset();

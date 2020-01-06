@@ -31,6 +31,7 @@ CustomTab eventsTab = CustomTab(
                     var snap = snapshot.data.documents.asMap();
 
                     return ListView.builder(
+                      //scrollDirection: Axis.horizontal,
                       itemCount: snap.length,
                       itemBuilder: (_, index) {
                         var bm;
@@ -77,6 +78,7 @@ CustomTab eventsTab = CustomTab(
                                 });
                           },
                           child: Card(
+                            clipBehavior: Clip.antiAlias,
                             elevation: 15,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),

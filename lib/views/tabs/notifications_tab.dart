@@ -17,10 +17,11 @@ CustomTab notificationsTab = CustomTab(
           builder: (context, child, model) {
             return Center(
               child: StreamBuilder<QuerySnapshot>(
-                  stream: model.db.collection('notices').snapshots(),
+                  stream: model.db.collection('notices').where('audience',arrayContains:model.profile['subscriptions'][1]).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       var snap = snapshot.data.documents.asMap();
+                      print(snap);
                       return ListView.builder(
                         itemCount: snap.length,
                         itemBuilder: (_, index) {
