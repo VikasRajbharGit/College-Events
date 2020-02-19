@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:college_events/views/tabs/create_screens/new_event.dart';
@@ -34,7 +33,7 @@ CustomTab eventsTab = CustomTab(
                       //scrollDirection: Axis.horizontal,
                       itemCount: snap.length,
                       itemBuilder: (_, index) {
-                        var bm;
+                        var d= DateTime.tryParse(snap[index].data['timeStamp']);
                         getImg() {
                           try {
                             return CachedNetworkImage(
@@ -142,32 +141,34 @@ CustomTab eventsTab = CustomTab(
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
                                           )),
-                                      Positioned(
-                                          right: 20,
-                                          bottom: 15,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              model.bookmarks.contains(
-                                                      snap[index].data['title'])
-                                                  ? model.delBookMark(
-                                                      snap[index].data['title'])
-                                                  : model.bookMark(
-                                                      snap[index].data,
-                                                      'event');
-                                            },
-                                            child: model.bookmarks.contains(
-                                                    snap[index].data['title'])
-                                                ? Icon(
-                                                    Icons.bookmark,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  )
-                                                : Icon(
-                                                    Icons.bookmark_border,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  ),
-                                          ))
+                                      // Positioned(
+                                      //     right: 20,
+                                      //     bottom: 15,
+                                      //     // child: InkWell(
+                                      //     //   splashColor: Colors.white,
+                                      //     //   onTap: () {
+                                      //     //     model.bookmarks.containsKey(
+                                      //     //             snap[index].data['title'])
+                                      //     //         ? model.delBookMark(
+                                      //     //             snap[index].data['title'])
+                                      //     //         : model.bookMark(
+                                      //     //             snap[index].data,
+                                      //     //             'event');
+                                      //     //   },
+                                      //     //   child: model.bookmarks.containsKey(
+                                      //     //           snap[index].data['title'])
+                                      //     //       ? Icon(
+                                      //     //           Icons.bookmark,
+                                      //     //           color: Colors.white,
+                                      //     //           size: 35,
+                                      //     //         )
+                                      //     //       : Icon(
+                                      //     //           Icons.bookmark_border,
+                                      //     //           color: Colors.white,
+                                      //     //           size: 35,
+                                      //     //         ),
+                                      //     // )
+                                      //     )
                                     ],
                                   ),
                                   // Padding(
@@ -204,9 +205,35 @@ fab(model) {
     return Builder(builder: (context) {
       return FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(context,
+        onPressed: ()async {
+          try {
+            final result = await InternetAddress.lookup('google.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              print('connected');
+               Navigator.push(context,
               MaterialPageRoute(builder: (BuildContext context) => NewEvent()));
+            }
+          } on SocketException catch (_) {
+            showDialog(
+              context: context,
+              builder: (context){
+                return AlertDialog(
+                  title: Text('No Internet'),
+                  content: Text('Please check your internet Connection to access this feature'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('OK'),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              }
+            );
+            print('not connected');
+          }
+         
         },
       );
     });

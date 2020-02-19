@@ -7,8 +7,10 @@ class Notice{
   String author;
   List audience;
   String timeStamp;
+  String priority;
+  String deadline;
 
-  Notice(this.title,this.details,this.files,this.author,this.audience,this.timeStamp);
+  Notice(this.title,this.details,this.files,this.author,this.audience,this.timeStamp,this.priority,this.deadline);
 
   Notice.fromSnapshot(DataSnapshot snapshot):
     title=snapshot.value['title'],
@@ -16,7 +18,9 @@ class Notice{
     files=snapshot.value['files'],
     author=snapshot.value['author'],
     audience=snapshot.value['audience'],
-    timeStamp=snapshot.value['last_updated'];
+    timeStamp=snapshot.value['last_updated'],
+    priority=snapshot.value['priority'],
+    deadline=snapshot.value['deadline'];
     
     
 
@@ -27,7 +31,9 @@ class Notice{
       'files':files,
       'author':author,
       'audience':audience,
-      'timeStamp':timeStamp
+      'timeStamp':timeStamp,
+      'priority':priority,
+      'deadline':deadline,
     };
   }
 

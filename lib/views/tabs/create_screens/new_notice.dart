@@ -1,5 +1,7 @@
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:college_events/views/tabs/create_screens/test.dart';
+import 'package:intl/intl.dart';
+import 'dropdownitems.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,7 +18,25 @@ class _newNoticeState extends State<newNotice> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   var toAll = false;
-  Notice notice = Notice('', '', [], '', [], '');
+  var priority = '3';
+  var deadline = DateTime.now();
+  Notice notice = Notice('', '', [], '', [], '', 'low',
+      DateTime.now().millisecondsSinceEpoch.toString());
+  var date = DateTime.now();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    //print('------ddddd-----${date.month}');
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: date,
+        firstDate: DateTime(date.month),
+        lastDate: DateTime(DateTime.now().year).add(Duration(days: 365)));
+    if (picked != null && picked != deadline)
+      setState(() {
+        deadline = picked;
+        notice.deadline = deadline.millisecondsSinceEpoch.toString();
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +108,67 @@ class _newNoticeState extends State<newNotice> {
                             Padding(
                               padding: EdgeInsets.all(5),
                             ),
+                            Row(
+                              children: <Widget>[
+                                Text('Deadline:'),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                GestureDetector(
+                                    onTap: () {
+                                      _selectDate(context);
+                                    },
+                                    child: Card(
+                                      elevation: 0,
+                                        child: Container(
+                                      padding: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: Text(
+                                            "${DateFormat.yMMMMd("en_US").format(deadline)}"),
+                                      ),
+                                    ))),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
+                            Text('Priority:'),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
+                            RadioListTile(
+                                title: Text('Low'),
+                                groupValue: priority,
+                                value: '3',
+                                onChanged: (val) {
+                                  notice.priority = val;
+                                  setState(() {
+                                    priority = val;
+                                  });
+                                }),
+                            RadioListTile(
+                                title: Text('Moderate'),
+                                groupValue: priority,
+                                value: '2',
+                                onChanged: (val) {
+                                  notice.priority = val;
+                                  setState(() {
+                                    priority = val;
+                                  });
+                                }),
+                            RadioListTile(
+                                title: Text('High'),
+                                groupValue: priority,
+                                value: '1',
+                                onChanged: (val) {
+                                  notice.priority = val;
+                                  setState(() {
+                                    priority = val;
+                                  });
+                                }),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                            ),
                             CheckboxListTile(
                               title: Text('Send To ALL'),
                               controlAffinity: ListTileControlAffinity.leading,
@@ -146,10 +227,9 @@ class _newNoticeState extends State<newNotice> {
                                               MaterialPageRoute(
                                                   builder: (BuildContext
                                                           context) =>
-                                                      test(notice, formKey)));
-                                        } else {
+                                                      test(notice, formKey)));                                        } else {
                                           List urls;
-                                          notice.audience.add('notice');
+                                          notice.audience.addAll(allTopics);
                                           //model.handleSubmit(formKey, notice)
                                           try {
                                             //var lock = Lock();
@@ -162,10 +242,11 @@ class _newNoticeState extends State<newNotice> {
                                                 model.fToUp,
                                                 '${notice.title}-${notice.author}-${notice.timeStamp}');
 
-                                            
-
-                                            model.handleSubmit(
+                                            print(notice.toJson());
+                                            if(formKey.currentState.validate()){
+                                              model.handleSubmit(
                                                 formKey, notice, 'notices');
+                                            }
                                             Navigator.of(context).pop();
 
                                             showDialog(

@@ -6,6 +6,7 @@ import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'create_screens/new_notice.dart';
 import 'create_screens/test.dart';
+import 'dart:io';
 
 CustomTab notificationsTab = CustomTab(
     appBarTitle: 'Notices',
@@ -17,14 +18,24 @@ CustomTab notificationsTab = CustomTab(
           builder: (context, child, model) {
             return Center(
               child: StreamBuilder<QuerySnapshot>(
-                  stream: model.db.collection('notices').where('audience',arrayContains:model.profile['subscriptions'][1]).snapshots(),
+                  stream: model.db
+                      .collection('notices')
+                      .where('audience',
+                          arrayContains: model.profile['subscriptions'][1])
+                          .orderBy('deadline')
+                          .orderBy('priority')
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       var snap = snapshot.data.documents.asMap();
-                      print(snap);
+                      //print(snap);
                       return ListView.builder(
                         itemCount: snap.length,
                         itemBuilder: (_, index) {
+                          var d =
+                              DateTime.tryParse(snap[index].data['timeStamp']);
+                          var dd=DateTime.fromMillisecondsSinceEpoch(int.parse(snap[index].data['deadline']));
+                          //print('-------dd--${d.day}/${d.month}/${d.year}');
                           return GestureDetector(
                             onDoubleTap: () {
                               model.bookMark(snap[index].data, 'notice');
@@ -78,32 +89,32 @@ CustomTab notificationsTab = CustomTab(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              model.bookmarks.contains(
-                                                      snap[index].data['title'])
-                                                  ? model.delBookMark(
-                                                      snap[index].data['title'])
-                                                  : model.bookMark(
-                                                      snap[index].data,
-                                                      'notice');
-                                            },
-                                            child: model.bookmarks.contains(
-                                                    snap[index].data['title'])
-                                                ? Icon(
-                                                    Icons.bookmark,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  )
-                                                : Icon(
-                                                    Icons.bookmark_border,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  ),
-                                          ),
-                                        ),
+                                        // Align(
+                                        //   alignment: Alignment.centerRight,
+                                        //   child: InkWell(
+                                        //     onTap: () {
+                                        //       model.bookmarks.containsKey(
+                                        //               snap[index].data['title'])
+                                        //           ? model.delBookMark(
+                                        //               snap[index].data['title'])
+                                        //           : model.bookMark(
+                                        //               snap[index].data,
+                                        //               'notice');
+                                        //     },
+                                        //     child: model.bookmarks.containsKey(
+                                        //             snap[index].data['title'])
+                                        //         ? Icon(
+                                        //             Icons.bookmark,
+                                        //             color: Colors.white,
+                                        //             size: 35,
+                                        //           )
+                                        //         : Icon(
+                                        //             Icons.bookmark_border,
+                                        //             color: Colors.white,
+                                        //             size: 35,
+                                        //           ),
+                                        //   ),
+                                        // ),
                                         Hero(
                                           tag: snap[index].data['timeStamp'],
                                           child: Material(
@@ -131,10 +142,28 @@ CustomTab notificationsTab = CustomTab(
                                           padding: EdgeInsets.all(5),
                                         ),
                                         Text(
+                                          'Posted on: ${d.day}/${d.month}/${d.year}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
+                                          'Deadline: ${dd.day}/${dd.month}/${dd.year}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(5),
+                                        ),
+                                        Text(
                                           '${snap[index].data['details']}',
                                           style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 15),
+                                              fontSize: 18),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 2,
                                         )
@@ -167,11 +196,36 @@ fab(model) {
     return Builder(builder: (context) {
       return FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => newNotice()));
+        onPressed: () async {
+          try {
+            final result = await InternetAddress.lookup('google.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              print('connected');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => newNotice()));
+            }
+          } on SocketException catch (_) {
+            showDialog(
+              context: context,
+              builder: (context){
+                return AlertDialog(
+                  title: Text('No Internet'),
+                  content: Text('Please check your internet Connection to access this feature'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('OK'),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              }
+            );
+            print('not connected');
+          }
         },
       );
     });

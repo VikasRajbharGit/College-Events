@@ -32,19 +32,60 @@ class FirebaseHandler extends Model {
   var imgUrls = new List();
   Map noticeMap = {};
   var tempList = [];
-  var bookmarks = [];
+  Map<String,dynamic> bookmarks={};
   var authority;
   var profile;
   notifyListeners();
 
+  getBookmark() async {
+          var ref = await db
+              .collection('users')
+              .document(currentUser.uid)
+              .collection('bm_check')
+              .snapshots()
+              .listen((res) {
+           // print(res.documents[0].data);
+            //var t = res.documents.asMap();
+            bookmarks=res.documents[0].data;
+           // print(bookmarks);
+            //model.bookmarks.clear();
+            
+            // t.forEach((key, val) {
+            //   model.bookmarks.add(val.data['title']);
+            // });
+            //print(model.bookmarks);
+
+            //print(model.bookmarks[0]);
+          });
+
+          //print(model.bookmarks.length);
+        }
+
   bookMark(data, type) {
-    data.addAll({'type': type});
+    data.addAll({'type': type,'BMtime':DateTime.now().millisecondsSinceEpoch.toString()});
     db
         .collection('users')
         .document(currentUser.uid)
         .collection('bookmarks')
         .document(data['title'])
         .setData(data);
+
+    bookmarks.putIfAbsent(data['title'], (){return true;});
+    notifyListeners();
+    
+  try{
+    //print(bookmarks);
+    db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('bm_check')
+        .document('bookmarks')
+        .setData(bookmarks,merge: true);
+  }
+  catch(e){
+    print('----VVVVVV----$e');
+  }
+    //getBookmark();
   }
 
   delBookMark(title) {
@@ -54,6 +95,18 @@ class FirebaseHandler extends Model {
         .collection('bookmarks')
         .document(title)
         .delete();
+
+    bookmarks.remove(title);
+    notifyListeners();
+    
+
+    db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('bm_check')
+        .document('bookmarks')
+        .setData(bookmarks);
+    //getBookmark();
   }
 
   Future<String> getImg(event, ext) async {
@@ -67,10 +120,10 @@ class FirebaseHandler extends Model {
   }
 
   void handleSubmit(GlobalKey<FormState> formkey, var Data, var branch) async {
-    final FormState form = formkey.currentState;
-
-    if (form.validate()) {
-      form.save();
+    //final FormState form = formkey.currentState;
+    //print(form.validate().toString());
+    // if (true) {
+      //form.save();
       var cuser = await _auth.currentUser();
       var uid = cuser.uid;
 
@@ -79,7 +132,7 @@ class FirebaseHandler extends Model {
       //form.reset();
 
       //databaseReference.push().set(todo.toJson());
-    }
+    // }
   }
 
   stageNoticeFiles(fileType) async {

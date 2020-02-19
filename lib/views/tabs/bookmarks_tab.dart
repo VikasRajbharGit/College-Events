@@ -19,7 +19,7 @@ CustomTab bookmarksTab = CustomTab(
                 stream: model.db
                     .collection('users')
                     .document(model.currentUser.uid)
-                    .collection('bookmarks')
+                    .collection('bookmarks').orderBy('BMtime',descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -28,6 +28,7 @@ CustomTab bookmarksTab = CustomTab(
                     return ListView.builder(
                       itemCount: snap.length,
                       itemBuilder: (_, index) {
+                        var d= DateTime.tryParse(snap[index].data['timeStamp']);
                         getImg() {
                           try {
                             return CachedNetworkImage(

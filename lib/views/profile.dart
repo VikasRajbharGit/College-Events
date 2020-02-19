@@ -91,7 +91,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
             // ),
             Padding(
               padding: EdgeInsets.all(
-                  MediaQuery.of(context).size.height * 0.03),
+                  MediaQuery.of(context).size.height * 0.01),
             ),
             Card(
               margin: EdgeInsets.all(15),

@@ -47,7 +47,7 @@ void main() async {
       }
     });
   }
-  fcmHandler();
+  //fcmHandler();
   runApp(MyApp(loggedIn, registered, authority));
 }
 
@@ -74,7 +74,10 @@ class MyApp extends StatelessWidget {
             //  }
             if (loggedIn) {
               _model.authority = authority;
+              _model.getUser();
               _model.getprofile(false);
+             // _model.bookmarks={};
+              _model.getBookmark();
             }
 
             // _model.getTheme(context);
@@ -111,10 +114,10 @@ class MyApp extends StatelessWidget {
                         title: TextStyle(
                             color: Colors.black,
                             fontSize: 30,
-                            //fontFamily: 'Lexend Deca',
+                            fontFamily: 'Lexend Deca',
                             fontWeight: FontWeight.w700)),
                     iconTheme: IconThemeData(color: Colors.black)),
-                //fontFamily: 'Lexend Deca',
+                fontFamily: 'Lexend Deca',
                 primarySwatch: Colors.red,
                 //cardColor: Colors.grey[900]
               ),
@@ -129,21 +132,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-fcmHandler() async {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  _firebaseMessaging.configure(
-    onMessage: (Map<String, dynamic> message) async {
-      print("onMessage:------> $message");
-      //_showItemDialog(message);
-    },
-    //onBackgroundMessage: myBackgroundMessageHandler,
-    onLaunch: (Map<String, dynamic> message) async {
-      print("onLaunch:----> $message");
-      //_navigateToItemDetail(message);
-    },
-    onResume: (Map<String, dynamic> message) async {
-      print("onResume:-----> $message");
-      //_navigateToItemDetail(message);
-    },
-  );
-}

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:path/path.dart' as p;
 import 'package:dio/dio.dart';
+import 'package:share/share.dart';
 
 class DetailsView extends StatelessWidget {
   Map notice;
@@ -18,10 +19,43 @@ class DetailsView extends StatelessWidget {
 
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
+        var d= DateTime.tryParse(notice['timeStamp']);
+        var dd=DateTime.fromMillisecondsSinceEpoch(int.parse(notice['deadline']));
         return Scaffold(
           appBar: AppBar(
             title: Text(" ${notice['title']}"),
             actions: <Widget>[
+              InkWell(
+                                            splashColor: Colors.white,
+                                            onTap: () {
+                                              model.bookmarks.containsKey(
+                                                      notice['title'])
+                                                  ? model.delBookMark(
+                                                      notice['title'])
+                                                  : model.bookMark(
+                                                      notice,
+                                                      'notice');
+                                                      //AppBuilder.of(context).rebuild();
+                                            },
+                                            child: model.bookmarks.containsKey(
+                                                    notice['title'])
+                                                ? Icon(
+                                                    Icons.bookmark,
+                                                    color: Colors.white,
+                                                    size: 35,
+                                                  )
+                                                : Icon(
+                                                    Icons.bookmark_border,
+                                                    color: Colors.white,
+                                                    size: 35,
+                                                  ),
+                                          ),
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: (){
+                  Share.share('Notice: '+notice['title']+'\n \n'+notice['details']+'\n\nBy: ${notice['author']}',subject:notice['title']);
+                },
+              ),
               notice['author'] == model.currentUser.email
                   ? IconButton(
                       icon: Icon(Icons.delete),
@@ -56,14 +90,22 @@ class DetailsView extends StatelessWidget {
                             Hero(
                               tag: notice['timeStamp'],
                               child: Material(
-                                child: Text(
+                                child: SelectableText(
                                   '${notice['title']}',
                                   style: TextStyle(fontSize: 45),
                                 ),
                               ),
                             ),
-                            Text(
+                            SelectableText(
                               'Posted by: ${notice['author']}',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            SelectableText(
+                              'Posted on: ${d.day}/${d.month}/${d.year} at ${d.hour}:${d.minute}',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            SelectableText(
+                              'Deadline: ${dd.day}/${dd.month}/${dd.year}',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -74,28 +116,45 @@ class DetailsView extends StatelessWidget {
                 ),
               ),
             ),
-            SliverFillViewport(
-              viewportFraction: 1.03,
-              delegate: SliverChildListDelegate([
-                // Padding(
-                //   padding: EdgeInsets.all(20),
-                // ),
-                Card(
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Card(
                   margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15))),
                   child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
+                    padding: EdgeInsets.all(20),
+                    child: SelectableText(
                       '${notice['details']}',
                       style: TextStyle(fontSize: 22),
                     ),
                   ),
                 ),
-              ]),
             ),
+            // SliverFillViewport(
+            //   viewportFraction: 1.03,
+            //   delegate: SliverChildListDelegate([
+            //     // Padding(
+            //     //   padding: EdgeInsets.all(5),
+            //     // ),
+            //     Card(
+            //       margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            //       shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.only(
+            //               topLeft: Radius.circular(15),
+            //               topRight: Radius.circular(15))),
+            //       child: Container(
+            //         padding: EdgeInsets.all(20),
+            //         child: SelectableText(
+            //           '${notice['details']}',
+            //           style: TextStyle(fontSize: 22),
+            //         ),
+            //       ),
+            //     ),
+            //   ]),
+            // ),
           ]),
           floatingActionButton: FloatingActionButton(
             tooltip: 'Download Files',

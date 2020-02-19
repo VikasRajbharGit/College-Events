@@ -2,6 +2,7 @@
 import 'package:college_events/views/tabs/bookmarks_tab.dart';
 import 'package:college_events/views/tabs/events_tab.dart';
 import 'package:college_events/views/tabs/notifications_tab.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -14,7 +15,8 @@ class home extends StatefulWidget {
   _homeState createState() => _homeState();
 }
 
-class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+class _homeState extends State<home>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController _tabController;
   List<CustomTab> tabs = [eventsTab, notificationsTab, bookmarksTab];
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -25,6 +27,44 @@ class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeep
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage:------> $message");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: ListTile(
+                    title: Text('New Notice'),
+                    subtitle: Text(message['notification']['title'])),
+                // Image.asset(
+                //   'assets/images/done.gif',
+                //   //filterQuality: FilterQuality.low,
+                // ),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ],
+              );
+            });
+        //_showItemDialog(message);
+      },
+      //onBackgroundMessage: myBackgroundMessageHandler,
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch:----> $message");
+        //_navigateToItemDetail(message);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume:-----> $message");
+        //_navigateToItemDetail(message);
+      },
+    );
+
     _controller =
         AnimationController(duration: Duration(milliseconds: 900), vsync: this);
     _tabController = TabController(length: tabs.length, vsync: this);
@@ -33,7 +73,7 @@ class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeep
         curve: Curves.fastLinearToSlowEaseIn, parent: _controller));
   }
 
- @override
+  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
@@ -41,35 +81,15 @@ class _homeState extends State<home> with TickerProviderStateMixin,AutomaticKeep
 
   @override
   Widget build(BuildContext context) {
-    
     _controller.forward();
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        //model.getprofile(false);
+        model.getprofile(false);
         model.getTheme(context);
         model.getUser();
-        getBookmark() async {
-          var ref = await model.db
-              .collection('users')
-              .document(model.currentUser.uid)
-              .collection('bookmarks')
-              .snapshots()
-              .listen((res) {
-            //print(res.documents[0].data);
-            var t = res.documents.asMap();
-            model.bookmarks.removeRange(0, model.bookmarks.length);
-            t.forEach((key, val) {
-              model.bookmarks.add(val.data['title']);
-            });
-            //print(model.bookmarks);
+        
 
-            //print(model.bookmarks[0]);
-          });
-
-          //print(model.bookmarks.length);
-        }
-
-        getBookmark();
+        //model.getBookmark();
         var height = MediaQuery.of(context).size.height;
         return AnimatedBuilder(
           animation: _controller,

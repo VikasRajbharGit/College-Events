@@ -9,6 +9,7 @@ class Event{
   String timeStamp;
   String contact;
   String committee;
+  String link;
 
   Event(this.title,this.details,this.files,this.author,this.category,this.timeStamp,this.contact,this.committee);
 
@@ -20,7 +21,8 @@ class Event{
     category=snapshot.value['category'],
     timeStamp=snapshot.value['timeStamp'],
     contact=snapshot.value['contact'],
-    committee=snapshot.value['committee'];
+    committee=snapshot.value['committee'],
+    link=snapshot.value['link'];
     
     
 
@@ -33,7 +35,8 @@ class Event{
       'audience':category,
       'timeStamp':timeStamp,
       'contact':contact,
-      'committee':committee
+      'committee':committee,
+      'link':link
     };
   }
 
