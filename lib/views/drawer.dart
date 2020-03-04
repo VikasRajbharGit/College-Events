@@ -1,4 +1,5 @@
 import 'package:college_events/views/feedback.dart' as prefix0;
+import 'package:college_events/views/rail_con.dart';
 import 'package:flutter/material.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'home.dart';
@@ -24,7 +25,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        //model.getUser();
+        model.getprofile(true);
         return Opacity(
           opacity: 1,
           child: Align(
@@ -166,7 +167,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                             Padding(
                               padding: EdgeInsets.all(10),
                             ),
-                            Text('Help')
+                            Text('About')
                           ],
                         ),
                         selected: active == 4 ? true : false,
@@ -176,7 +177,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           Navigator.pop(context);
                           if (active != 4) {
                             //Navigator.pop(context);
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => help(),
@@ -184,6 +185,34 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           }
                           setState(() {
                             active = 4;
+                          });
+                        },
+                      ),
+                      ListTile(
+                        title: Row(
+                          children: <Widget>[
+                            Icon(Icons.directions_railway),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                            ),
+                            Text('Concession')
+                          ],
+                        ),
+                        selected: active == 5 ? true : false,
+                        onTap: () {
+                          //model.getUser();
+                          //model.notifyListeners();
+                          Navigator.pop(context);
+                          if (active != 5) {
+                            //Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => concession(),
+                                ));
+                          }
+                          setState(() {
+                            active = 5;
                           });
                         },
                       ),
@@ -200,10 +229,10 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                         //selected: active==2 ? true:false,
                         onTap: () {
                           Navigator.pop(context);
-                          if (active != 5) {
+                          if (active != 6) {
                             model.gSignOut(context);
                             setState(() {
-                              active = 5;
+                              active = 6;
                             });
                           }
                         },

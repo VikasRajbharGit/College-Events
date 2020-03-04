@@ -3,6 +3,7 @@ import 'package:college_events/app_builder.dart';
 import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
@@ -55,12 +56,10 @@ class EventsDetails extends StatelessWidget {
                       child: model.bookmarks.containsKey(event['title'])
                           ? Icon(
                               Icons.bookmark,
-                              color: Colors.white,
                               size: 35,
                             )
                           : Icon(
                               Icons.bookmark_border,
-                              color: Colors.white,
                               size: 35,
                             ),
                     ),
@@ -167,11 +166,19 @@ class EventsDetails extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.all(2),
                             ),
+                            Text(
+                                'Date: ${DateFormat.yMMMMd("en_US").format(DateTime.fromMillisecondsSinceEpoch(int.tryParse(event['date'])))}'),
+                            Padding(
+                              padding: EdgeInsets.all(2),
+                            ),
                             Row(
                               children: <Widget>[
                                 Text('Website/Registration Link: '),
-                                event['link'] != null
-                                    ? GestureDetector(
+                                event['link'] == 'NA' ||
+                                        event['link'] == null ||
+                                        event['link'] == ''
+                                    ? Text('NA')
+                                    : GestureDetector(
                                         onTap: () {
                                           try {
                                             _launchURL();
@@ -183,7 +190,6 @@ class EventsDetails extends StatelessWidget {
                                           event['link'],
                                           style: TextStyle(color: Colors.blue),
                                         ))
-                                    : Text('NA'),
                               ],
                             ),
                             Padding(

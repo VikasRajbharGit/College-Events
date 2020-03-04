@@ -1,6 +1,7 @@
 //import 'package:college_events/util/text_styles.dart' as prefix0;
 import 'package:college_events/views/tabs/bookmarks_tab.dart';
 import 'package:college_events/views/tabs/events_tab.dart';
+import 'package:college_events/views/tabs/expired_notices.dart';
 import 'package:college_events/views/tabs/notifications_tab.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,10 @@ class _homeState extends State<home>
   @override
   Widget build(BuildContext context) {
     _controller.forward();
+    notificationsTab.context=context;
+    notificationsTab.appBarActions=[IconButton(icon: Icon(Icons.history), onPressed: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>expired_notices()));
+      })];
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
         model.getprofile(false);

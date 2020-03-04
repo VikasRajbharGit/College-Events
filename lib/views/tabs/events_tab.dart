@@ -28,7 +28,9 @@ CustomTab eventsTab = CustomTab(
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var snap = snapshot.data.documents.asMap();
-
+                    if(snap.length==0){
+                        return Center(child: Text('No Events'),);
+                      }
                     return ListView.builder(
                       //scrollDirection: Axis.horizontal,
                       itemCount: snap.length,

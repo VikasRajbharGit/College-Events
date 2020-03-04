@@ -32,7 +32,7 @@ void main() async {
     loggedIn = true;
     var ref = await Firestore.instance
         .collection('users')
-        .document(mcurrentUser.uid)
+        .document(mcurrentUser.email)
         .collection('info')
         .document('info')
         .get()

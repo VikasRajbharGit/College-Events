@@ -48,60 +48,61 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
             title: Text('Profile'),
           ),
           body: Center(
-              child: Column(children: <Widget>[
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, widget) {
-                //getprofile();
-                _controller.forward();
-                // if (_controller.isCompleted) {
-                //   _controller.reset();
-                // }
+              child: SingleChildScrollView(
+            child: Column(children: <Widget>[
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, widget) {
+                  //getprofile();
+                  _controller.forward();
+                  // if (_controller.isCompleted) {
+                  //   _controller.reset();
+                  // }
 
-                return GestureDetector(
-                  onLongPress: () {
-                    handle(model);
-                  },
-                  child: CircleAvatar(
-                    backgroundImage: model.ppic == null
-                        ? AssetImage('assets/images/anim.gif')
-                        : NetworkImage(model.ppic),
-                    radius: animation.value,
-                  ),
-                );
-              },
-            ),
-            Text(
-              model.username,
-              style: TextStyle(fontSize: 50),
-            ),
-            // RaisedButton(
-            //   onPressed: () {
-            //     //model.saveDeviceToken(['notices']);
-            //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => register()));
-            //   },
-            //   child: Text('Register'),
-            // ),
-            Padding(
-              padding: EdgeInsets.all(
-                  MediaQuery.of(context).size.height * 0.01),
-            ),
-            Card(
-              margin: EdgeInsets.all(15),
-              child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: SingleChildScrollView(
-                    child: prof(model),
-                  )),
-            )
-          ])),
+                  return GestureDetector(
+                    onLongPress: () {
+                      handle(model);
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: model.ppic == null
+                          ? AssetImage('assets/images/anim.gif')
+                          : NetworkImage(model.ppic),
+                      radius: animation.value,
+                    ),
+                  );
+                },
+              ),
+              Text(
+                model.username,
+                style: TextStyle(fontSize: 50),
+              ),
+              // RaisedButton(
+              //   onPressed: () {
+              //     //model.saveDeviceToken(['notices']);
+              //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => register()));
+              //   },
+              //   child: Text('Register'),
+              // ),
+              Padding(
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.height * 0.01),
+              ),
+              Card(
+                margin: EdgeInsets.all(15),
+                child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: SingleChildScrollView(
+                      child: prof(model),
+                    )),
+              )
+            ]),
+          )),
           drawer: NavigationDrawer(2, context),
         );
       },

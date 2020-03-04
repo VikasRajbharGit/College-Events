@@ -286,7 +286,7 @@ class _testState extends State<test> {
                     model.uploadToStorage(context, _scaffoldKey, model.fToUp,
                         '${notice.title}-${notice.author}-${notice.timeStamp}');
 
-                    model.handleSubmit(formKey, notice,'notices');
+                    model.handleSubmit( notice,'notices');
                     Navigator.of(context).pop();
 
                     showDialog(

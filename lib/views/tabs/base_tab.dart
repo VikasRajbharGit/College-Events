@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 class CustomTab {
   final String appBarTitle;
-  final List<Widget> appBarActions;
+   List<Widget> appBarActions;
   final Builder body;
   final Widget floatingActionButton;
+   BuildContext context;
 
   CustomTab(
       {this.appBarTitle,
       this.appBarActions,
       this.body,
-      this.floatingActionButton});
+      this.floatingActionButton,
+      this.context});
 }

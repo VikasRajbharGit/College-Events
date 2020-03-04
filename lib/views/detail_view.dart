@@ -19,41 +19,41 @@ class DetailsView extends StatelessWidget {
 
     return ScopedModelDescendant<FirebaseHandler>(
       builder: (context, child, model) {
-        var d= DateTime.tryParse(notice['timeStamp']);
-        var dd=DateTime.fromMillisecondsSinceEpoch(int.parse(notice['deadline']));
+        var d = DateTime.tryParse(notice['timeStamp']);
+        var dd =
+            DateTime.fromMillisecondsSinceEpoch(int.parse(notice['deadline']));
         return Scaffold(
           appBar: AppBar(
             title: Text(" ${notice['title']}"),
             actions: <Widget>[
               InkWell(
-                                            splashColor: Colors.white,
-                                            onTap: () {
-                                              model.bookmarks.containsKey(
-                                                      notice['title'])
-                                                  ? model.delBookMark(
-                                                      notice['title'])
-                                                  : model.bookMark(
-                                                      notice,
-                                                      'notice');
-                                                      //AppBuilder.of(context).rebuild();
-                                            },
-                                            child: model.bookmarks.containsKey(
-                                                    notice['title'])
-                                                ? Icon(
-                                                    Icons.bookmark,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  )
-                                                : Icon(
-                                                    Icons.bookmark_border,
-                                                    color: Colors.white,
-                                                    size: 35,
-                                                  ),
-                                          ),
+                splashColor: Colors.white,
+                onTap: () {
+                  model.bookmarks.containsKey(notice['title'])
+                      ? model.delBookMark(notice['title'])
+                      : model.bookMark(notice, 'notice');
+                  //AppBuilder.of(context).rebuild();
+                },
+                child: model.bookmarks.containsKey(notice['title'])
+                    ? Icon(
+                        Icons.bookmark,
+                        size: 35,
+                      )
+                    : Icon(
+                        Icons.bookmark_border,
+                        size: 35,
+                      ),
+              ),
               IconButton(
                 icon: Icon(Icons.share),
-                onPressed: (){
-                  Share.share('Notice: '+notice['title']+'\n \n'+notice['details']+'\n\nBy: ${notice['author']}',subject:notice['title']);
+                onPressed: () {
+                  Share.share(
+                      'Notice: ' +
+                          notice['title'] +
+                          '\n \n' +
+                          notice['details'] +
+                          '\n\nBy: ${notice['author']}',
+                      subject: notice['title']);
                 },
               ),
               notice['author'] == model.currentUser.email
@@ -119,19 +119,19 @@ class DetailsView extends StatelessWidget {
             SliverFillRemaining(
               hasScrollBody: false,
               child: Card(
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15))),
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: SelectableText(
-                      '${notice['details']}',
-                      style: TextStyle(fontSize: 22),
-                    ),
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15))),
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  child: SelectableText(
+                    '${notice['details']}',
+                    style: TextStyle(fontSize: 22),
                   ),
                 ),
+              ),
             ),
             // SliverFillViewport(
             //   viewportFraction: 1.03,
@@ -177,13 +177,12 @@ class DetailsView extends StatelessWidget {
                       await model.storageReference.child(f).getDownloadURL();
 
                   //var dir = '/storage/emulated/0/Evento';
-                  var dir = getExternalStorageDirectory().then((res)async{
-                  t=res.path;
-                  t=t+'/../../../../Download';
-                  Response response = await dio.download(
-                    ref, '$t/$f2');
-                  print(t);
-                });
+                  var dir = getExternalStorageDirectory().then((res) async {
+                    t = res.path;
+                    t = t + '/../../../../Download';
+                    Response response = await dio.download(ref, '$t/$f2');
+                    print(t);
+                  });
 
                   // Response response =   await dio.download(
                   //     '$ref', '/storage/emulated/0/Evento/$f2');

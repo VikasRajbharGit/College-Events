@@ -8,9 +8,11 @@ import 'create_screens/new_notice.dart';
 import 'create_screens/test.dart';
 import 'dart:io';
 
+import 'expired_notices.dart';
+
 CustomTab notificationsTab = CustomTab(
     appBarTitle: 'Notices',
-    appBarActions: [],
+    
     body: Builder(
       builder: (BuildContext context) {
         var height = MediaQuery.of(context).size.height;
@@ -22,19 +24,33 @@ CustomTab notificationsTab = CustomTab(
                       .collection('notices')
                       .where('audience',
                           arrayContains: model.profile['subscriptions'][1])
-                          .orderBy('deadline')
-                          .orderBy('priority')
+                      .orderBy('deadline')
+                      .orderBy('priority')
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       var snap = snapshot.data.documents.asMap();
                       //print(snap);
+                      if(snap.length==0){
+                        return Center(child: Text('No Notices'),);
+                      }
                       return ListView.builder(
                         itemCount: snap.length,
                         itemBuilder: (_, index) {
+                          if (DateTime.now().isAfter(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  int.parse(snap[index].data['deadline'])))) {
+                            model.handleSubmit(
+                                snap[index].data, 'expired_notifications');
+                            model.db
+                                .collection('notices')
+                                .document(snap[index].data['title'])
+                                .delete();
+                          }
                           var d =
                               DateTime.tryParse(snap[index].data['timeStamp']);
-                          var dd=DateTime.fromMillisecondsSinceEpoch(int.parse(snap[index].data['deadline']));
+                          var dd = DateTime.fromMillisecondsSinceEpoch(
+                              int.parse(snap[index].data['deadline']));
                           //print('-------dd--${d.day}/${d.month}/${d.year}');
                           return GestureDetector(
                             onDoubleTap: () {
@@ -208,22 +224,22 @@ fab(model) {
             }
           } on SocketException catch (_) {
             showDialog(
-              context: context,
-              builder: (context){
-                return AlertDialog(
-                  title: Text('No Internet'),
-                  content: Text('Please check your internet Connection to access this feature'),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('OK'),
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                );
-              }
-            );
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('No Internet'),
+                    content: Text(
+                        'Please check your internet Connection to access this feature'),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                });
             print('not connected');
           }
         },

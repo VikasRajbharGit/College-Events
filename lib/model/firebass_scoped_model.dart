@@ -32,77 +32,80 @@ class FirebaseHandler extends Model {
   var imgUrls = new List();
   Map noticeMap = {};
   var tempList = [];
-  Map<String,dynamic> bookmarks={};
+  Map<String, dynamic> bookmarks = {};
   var authority;
   var profile;
   notifyListeners();
 
   getBookmark() async {
-          var ref = await db
-              .collection('users')
-              .document(currentUser.uid)
-              .collection('bm_check')
-              .snapshots()
-              .listen((res) {
-           // print(res.documents[0].data);
-            //var t = res.documents.asMap();
-            bookmarks=res.documents[0].data;
-           // print(bookmarks);
-            //model.bookmarks.clear();
-            
-            // t.forEach((key, val) {
-            //   model.bookmarks.add(val.data['title']);
-            // });
-            //print(model.bookmarks);
+    var ref = await db
+        .collection('users')
+        .document(currentUser.email)
+        .collection('bm_check')
+        .snapshots()
+        .listen((res) {
+      // print(res.documents[0].data);
+      //var t = res.documents.asMap();
+      bookmarks = res.documents[0].data;
+      // print(bookmarks);
+      //model.bookmarks.clear();
 
-            //print(model.bookmarks[0]);
-          });
+      // t.forEach((key, val) {
+      //   model.bookmarks.add(val.data['title']);
+      // });
+      //print(model.bookmarks);
 
-          //print(model.bookmarks.length);
-        }
+      //print(model.bookmarks[0]);
+    });
+
+    //print(model.bookmarks.length);
+  }
 
   bookMark(data, type) {
-    data.addAll({'type': type,'BMtime':DateTime.now().millisecondsSinceEpoch.toString()});
+    data.addAll({
+      'type': type,
+      'BMtime': DateTime.now().millisecondsSinceEpoch.toString()
+    });
     db
         .collection('users')
-        .document(currentUser.uid)
+        .document(currentUser.email)
         .collection('bookmarks')
         .document(data['title'])
         .setData(data);
 
-    bookmarks.putIfAbsent(data['title'], (){return true;});
+    bookmarks.putIfAbsent(data['title'], () {
+      return true;
+    });
     notifyListeners();
-    
-  try{
-    //print(bookmarks);
-    db
-        .collection('users')
-        .document(currentUser.uid)
-        .collection('bm_check')
-        .document('bookmarks')
-        .setData(bookmarks,merge: true);
-  }
-  catch(e){
-    print('----VVVVVV----$e');
-  }
+
+    try {
+      //print(bookmarks);
+      db
+          .collection('users')
+          .document(currentUser.email)
+          .collection('bm_check')
+          .document('bookmarks')
+          .setData(bookmarks, merge: true);
+    } catch (e) {
+      print('----VVVVVV----$e');
+    }
     //getBookmark();
   }
 
   delBookMark(title) {
     db
         .collection('users')
-        .document(currentUser.uid)
+        .document(currentUser.email)
         .collection('bookmarks')
         .document(title)
         .delete();
 
     bookmarks.remove(title);
     notifyListeners();
-    
 
     db
         .collection('users')
-        .document(currentUser.uid)
+        .document(currentUser.email)
         .collection('bm_check')
         .document('bookmarks')
         .setData(bookmarks);
@@ -119,19 +122,29 @@ class FirebaseHandler extends Model {
     return ref;
   }
 
-  void handleSubmit(GlobalKey<FormState> formkey, var Data, var branch) async {
+  void handleSubmit( var Data, var branch) async {
     //final FormState form = formkey.currentState;
     //print(form.validate().toString());
     // if (true) {
-      //form.save();
-      var cuser = await _auth.currentUser();
-      var uid = cuser.uid;
+    //form.save();
+    var cuser = await _auth.currentUser();
+    var date=DateTime.now().millisecondsSinceEpoch;
+    var uid = cuser.uid;
+    if (branch == 'concession') {
+      await db.collection(branch).document(Data['branch']).collection('awaiting').document(Data['id']).setData(Data);
+      await db.collection('users').document(currentUser.email).collection('info').document('info').updateData({'renewal':Data['renewal']});
+    }
+    else if(branch=='expired_notifications'){
+      await db.collection(branch).document(Data['title']).setData(Data);
+    }
+     else {
+      await db.collection(branch).document('${Data.title}-${date}').setData(Data.toJson());
+    }
+    
 
-      await db.collection(branch).document(Data.title).setData(Data.toJson());
+    //form.reset();
 
-      //form.reset();
-
-      //databaseReference.push().set(todo.toJson());
+    //databaseReference.push().set(todo.toJson());
     // }
   }
 
@@ -212,7 +225,7 @@ class FirebaseHandler extends Model {
       print('-------xxx ${user.uid}');
       var reg = await Firestore.instance
           .collection('users')
-          .document(user.uid)
+          .document(user.email)
           .collection('info')
           .document('info')
           .get()
@@ -238,7 +251,7 @@ class FirebaseHandler extends Model {
       if (registered) {
         var ref = db
             .collection('users')
-            .document(currentUser.uid)
+            .document(currentUser.email)
             .collection('info')
             .document('info')
             .get()
@@ -269,7 +282,7 @@ class FirebaseHandler extends Model {
       try {
         Map pro = await db
             .collection('users')
-            .document('${currentUser.uid}')
+            .document('${currentUser.email}')
             .collection('info')
             .document('info')
             .get()
@@ -291,7 +304,7 @@ class FirebaseHandler extends Model {
   gSignOut(BuildContext context) async {
     // var ref = db
     //     .collection('users')
-    //     .document(currentUser.uid)
+    //     .document(currentUser.email)
     //     .collection('info')
     //     .document('info')
     //     .get()
@@ -372,7 +385,7 @@ class FirebaseHandler extends Model {
     if (fcmToken != null) {
       var tokens = db
           .collection('users')
-          .document(currentUser.uid)
+          .document(currentUser.email)
           .collection('tokens')
           .document(fcmToken);
       topics.forEach((topic) {

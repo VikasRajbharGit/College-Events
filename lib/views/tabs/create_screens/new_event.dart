@@ -4,6 +4,7 @@ import 'package:college_events/model/firebass_scoped_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../../../model/event_model.dart';
 import 'package:path/path.dart' as p;
@@ -16,8 +17,25 @@ class NewEvent extends StatefulWidget {
 class _NewEventState extends State<NewEvent> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Event event = Event('', '', [], '', '', '', '', '');
+  Event event = Event('', '', [], '', '', '', '', '',
+      DateTime.now().millisecondsSinceEpoch.toString());
   var categoryVal;
+  var curDate = DateTime.now();
+  var date = DateTime.now();
+  Future<Null> _selectDate(BuildContext context) async {
+    //print('------ddddd-----${date.month}');
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: curDate,
+        firstDate: DateTime(curDate.month),
+        lastDate: DateTime(DateTime.now().year).add(Duration(days: 365)));
+    if (picked != null && picked != date)
+      setState(() {
+        date = picked;
+        event.date = date.millisecondsSinceEpoch.toString();
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<FirebaseHandler>(
@@ -35,7 +53,7 @@ class _NewEventState extends State<NewEvent> {
                   height: MediaQuery.of(context).size.height * 0.8,
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: SingleChildScrollView(
-                                      child: Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Container(
@@ -49,10 +67,10 @@ class _NewEventState extends State<NewEvent> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: TextFormField(
-                            validator: (val)=> val.length<1 ? 'Can not be empty':null,
+                            validator: (val) =>
+                                val.length < 1 ? 'Can not be empty' : null,
                             decoration: InputDecoration(
-                                hintText: 'Title',
-                                border: InputBorder.none),
+                                hintText: 'Title', border: InputBorder.none),
                             onChanged: (val) {
                               event.title = val;
                             },
@@ -71,7 +89,8 @@ class _NewEventState extends State<NewEvent> {
                               ),
                               borderRadius: BorderRadius.circular(20)),
                           child: TextFormField(
-                            validator: (val)=> val.length<1 ? 'Can not be empty':null,
+                            validator: (val) =>
+                                val.length < 1 ? 'Can not be empty' : null,
                             decoration: InputDecoration(
                               hintText: 'Description',
                               border: InputBorder.none,
@@ -85,6 +104,30 @@ class _NewEventState extends State<NewEvent> {
                         Padding(
                           padding: EdgeInsets.all(10),
                         ),
+                        Row(
+                          children: <Widget>[
+                            Text('Event Date:'),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            GestureDetector(
+                                onTap: () {
+                                  _selectDate(context);
+                                },
+                                child: Card(
+                                    elevation: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: Text(
+                                            "${DateFormat.yMMMMd("en_US").format(date)}"),
+                                      ),
+                                    ))),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(5),
+                        ),
                         Container(
                           padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
@@ -95,7 +138,6 @@ class _NewEventState extends State<NewEvent> {
                               ),
                               borderRadius: BorderRadius.circular(20)),
                           child: TextFormField(
-                            validator: (val)=> val.length<1 ? 'Can not be empty':null,
                             decoration: InputDecoration(
                               hintText: 'Registraion Link or Website',
                               border: InputBorder.none,
@@ -103,7 +145,6 @@ class _NewEventState extends State<NewEvent> {
                             onChanged: (val) {
                               event.link = val;
                             },
-                            
                           ),
                         ),
                         Padding(
@@ -148,7 +189,8 @@ class _NewEventState extends State<NewEvent> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: TextFormField(
-                            validator: (val)=> val.length<1 ? 'Can not be empty':null,
+                            validator: (val) =>
+                                val.length < 1 ? 'Can not be empty' : null,
                             decoration: InputDecoration(
                                 hintText: 'Committee',
                                 border: InputBorder.none),
@@ -172,10 +214,10 @@ class _NewEventState extends State<NewEvent> {
                           ),
                           child: TextFormField(
                             keyboardType: TextInputType.phone,
-                            validator: (val)=> val.length!=10 ? 'Not valid Number':null,
+                            validator: (val) =>
+                                val.length != 10 ? 'Not valid Number' : null,
                             decoration: InputDecoration(
-                                hintText: 'Contact',
-                                border: InputBorder.none),
+                                hintText: 'Contact', border: InputBorder.none),
                             onChanged: (val) {
                               event.contact = val;
                             },
@@ -191,10 +233,8 @@ class _NewEventState extends State<NewEvent> {
                             //type: MaterialType.transparency,
                             color: Theme.of(context).accentColor,
                             child: Container(
-                              width:
-                                  MediaQuery.of(context).size.width * 0.3,
-                              height:
-                                  MediaQuery.of(context).size.height * 0.05,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.height * 0.05,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(10),
                                 focusColor: Colors.red,
@@ -205,72 +245,67 @@ class _NewEventState extends State<NewEvent> {
                                   style: TextStyle(color: Colors.white),
                                 )),
                                 onTap: () {
-                                  if(formKey.currentState.validate()){
+                                  if (formKey.currentState.validate()) {
                                     event.category = categoryVal;
-                                  event.timeStamp =
-                                      DateTime.now().toString();
-                                  // try {
-                                  //   model.fToUp
-                                  //       .forEach((fileName, filePath) {
-                                  //     event.files
-                                  //         .add(p.extension(filePath));
-                                  //   });
-                                  // } catch (e) {
-                                  //   //print(e);
-                                  // }
-                                  if(model.eventImage!=null){
-                                    final StorageReference storageReference =
-                                      FirebaseStorage.instance.ref();
-                                  //var k = model.fToUp.keys.toList();
-                                  //var f = model.fToUp[k[0]];
+                                    event.timeStamp = DateTime.now().toString();
+                                    // try {
+                                    //   model.fToUp
+                                    //       .forEach((fileName, filePath) {
+                                    //     event.files
+                                    //         .add(p.extension(filePath));
+                                    //   });
+                                    // } catch (e) {
+                                    //   //print(e);
+                                    // }
+                                    if (model.eventImage != null) {
+                                      final StorageReference storageReference =
+                                          FirebaseStorage.instance.ref();
+                                      //var k = model.fToUp.keys.toList();
+                                      //var f = model.fToUp[k[0]];
 
-                                  var x = model.eventImage.path;
-                                  final StorageUploadTask uploadTask =
-                                      storageReference
-                                          .child(
-                                              'event-${event.title}-${event.author}-${event.timeStamp}${p.extension(x)}')
-                                          .putFile(
-                                            model.eventImage,
-                                          );
-                                  showDialog(
-                                      barrierDismissible: false,
-                                      context: context,
-                                      builder: (context) {
-                                        return Center(
-                                          child:
-                                              CircularProgressIndicator(),
-                                        );
+                                      var x = model.eventImage.path;
+                                      final StorageUploadTask uploadTask =
+                                          storageReference
+                                              .child(
+                                                  'event-${event.title}-${event.author}-${event.timeStamp}${p.extension(x)}')
+                                              .putFile(
+                                                model.eventImage,
+                                              );
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          });
+                                      uploadTask.onComplete
+                                          .then((onValue) async {
+                                        var temp =
+                                            await onValue.ref.getDownloadURL();
+                                        event.files.add(temp);
+
+                                        model.handleSubmit(event, 'events');
+                                        model.eventImage = null;
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
                                       });
-                                  uploadTask.onComplete
-                                      .then((onValue) async {
-                                    var temp =
-                                        await onValue.ref.getDownloadURL();
-                                    event.files.add(temp);
-
-                                    model.handleSubmit(
-                                        formKey, event, 'events');
-                                    model.eventImage=null;
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  });
-                                  }
-                                  else{
-                                    showDialog(
-                                      barrierDismissible: false,
-                                      context: context,
-                                      builder: (context) {
-                                        return Center(
-                                          child:
-                                              CircularProgressIndicator(),
-                                        );
-                                      });
-                                    model.handleSubmit(
-                                        formKey, event, 'events');
-                                    model.eventImage=null;
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  }
-
+                                    } else {
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          });
+                                      model.handleSubmit(event, 'events');
+                                      model.eventImage = null;
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    }
                                   }
                                   // model.uploadToStorage(
                                   //     context,

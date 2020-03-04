@@ -6,10 +6,10 @@ class help extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Help'),
+        title: Text('About'),
       ),
       body: Center(
-        child: Text('Version: Alpha 1.0.1'),
+        child: Text('Version: Beta 1.0.0'),
       ),
       drawer: NavigationDrawer(4, context),
       

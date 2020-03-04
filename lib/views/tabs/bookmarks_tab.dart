@@ -18,13 +18,15 @@ CustomTab bookmarksTab = CustomTab(
             child: StreamBuilder<QuerySnapshot>(
                 stream: model.db
                     .collection('users')
-                    .document(model.currentUser.uid)
+                    .document(model.currentUser.email)
                     .collection('bookmarks').orderBy('BMtime',descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var snap = snapshot.data.documents.asMap();
-
+                    if(snap.length==0){
+                        return Center(child: Text('No Bookmarks'),);
+                      }
                     return ListView.builder(
                       itemCount: snap.length,
                       itemBuilder: (_, index) {
