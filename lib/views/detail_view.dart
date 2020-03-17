@@ -29,12 +29,12 @@ class DetailsView extends StatelessWidget {
               InkWell(
                 splashColor: Colors.white,
                 onTap: () {
-                  model.bookmarks.containsKey(notice['title'])
-                      ? model.delBookMark(notice['title'])
+                  model.bookmarks.containsKey(notice['name'])
+                      ? model.delBookMark(notice['name'])
                       : model.bookMark(notice, 'notice');
                   //AppBuilder.of(context).rebuild();
                 },
-                child: model.bookmarks.containsKey(notice['title'])
+                child: model.bookmarks.containsKey(notice['name'])
                     ? Icon(
                         Icons.bookmark,
                         size: 35,
@@ -62,7 +62,7 @@ class DetailsView extends StatelessWidget {
                       onPressed: () {
                         model.db
                             .collection('notices')
-                            .document(notice['title'])
+                            .document(notice['name'])
                             .delete();
                         Navigator.pop(context);
                       },

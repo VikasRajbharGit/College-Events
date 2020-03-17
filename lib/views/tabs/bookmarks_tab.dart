@@ -63,7 +63,7 @@ CustomTab bookmarksTab = CustomTab(
                         if (snap[index].data['type'] == 'event') {
                           return GestureDetector(
                             onDoubleTap: () {
-                              model.delBookMark(snap[index].data['title']);
+                              model.delBookMark(snap[index].data['name']);
                               showDialog(
                                   context: context,
                                   barrierDismissible: true,
@@ -154,7 +154,7 @@ CustomTab bookmarksTab = CustomTab(
                                               onTap: () {
                                                 model.delBookMark(
                                                         snap[index]
-                                                            .data['title']);
+                                                            .data['name']);
                                               },
                                               child: Icon(
                                                       Icons.bookmark,
@@ -181,7 +181,7 @@ CustomTab bookmarksTab = CustomTab(
                         } else {
                           return GestureDetector(
                             onDoubleTap: () {
-                              model.delBookMark(snap[index].data['title']);
+                              model.delBookMark(snap[index].data['name']);
                               showDialog(
                                   context: context,
                                   barrierDismissible: true,
@@ -238,7 +238,7 @@ CustomTab bookmarksTab = CustomTab(
                                           child: GestureDetector(
                                             onTap: () {
                                               model.delBookMark(
-                                                  snap[index].data['title']);
+                                                  snap[index].data['name']);
                                             },
                                             child: Icon(
                                               Icons.bookmark,

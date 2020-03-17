@@ -237,6 +237,8 @@ class _newNoticeState extends State<newNotice> {
 
                                         print(notice.toJson());
                                         if (formKey.currentState.validate()) {
+                                          var date=DateTime.now().millisecondsSinceEpoch;
+                                          notice.name=notice.title+'-'+date.toString();
                                           model.handleSubmit(notice, 'notices');
                                         }
                                         Navigator.of(context).pop();

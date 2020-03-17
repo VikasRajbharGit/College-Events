@@ -301,6 +301,10 @@ class _NewEventState extends State<NewEvent> {
                                                   CircularProgressIndicator(),
                                             );
                                           });
+                                      var date =
+                                          DateTime.now().millisecondsSinceEpoch;
+                                      event.name =
+                                          event.title + '-' + date.toString();
                                       model.handleSubmit(event, 'events');
                                       model.eventImage = null;
                                       Navigator.of(context).pop();

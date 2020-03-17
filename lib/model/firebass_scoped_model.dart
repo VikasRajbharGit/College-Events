@@ -70,10 +70,10 @@ class FirebaseHandler extends Model {
         .collection('users')
         .document(currentUser.email)
         .collection('bookmarks')
-        .document(data['title'])
+        .document(data['name'])
         .setData(data);
 
-    bookmarks.putIfAbsent(data['title'], () {
+    bookmarks.putIfAbsent(data['name'], () {
       return true;
     });
     notifyListeners();
@@ -128,17 +128,18 @@ class FirebaseHandler extends Model {
     // if (true) {
     //form.save();
     var cuser = await _auth.currentUser();
-    var date=DateTime.now().millisecondsSinceEpoch;
+    
     var uid = cuser.uid;
     if (branch == 'concession') {
       await db.collection(branch).document(Data['branch']).collection('awaiting').document(Data['id']).setData(Data);
       await db.collection('users').document(currentUser.email).collection('info').document('info').updateData({'renewal':Data['renewal']});
     }
     else if(branch=='expired_notifications'){
-      await db.collection(branch).document(Data['title']).setData(Data);
+      await db.collection(branch).document(Data['name']).setData(Data);
     }
      else {
-      await db.collection(branch).document('${Data.title}-${date}').setData(Data.toJson());
+      // await db.collection(branch).document('${Data.title}-${date}').setData(Data.toJson());
+      await db.collection(branch).document('${Data.name}').setData(Data.toJson());
     }
     
 

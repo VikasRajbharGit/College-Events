@@ -285,8 +285,9 @@ class _testState extends State<test> {
                     //     DateTime.now().toString();
                     model.uploadToStorage(context, _scaffoldKey, model.fToUp,
                         '${notice.title}-${notice.author}-${notice.timeStamp}');
-
-                    model.handleSubmit( notice,'notices');
+                    var date = DateTime.now().millisecondsSinceEpoch;
+                    notice.name = notice.title + '-' + date.toString();
+                    model.handleSubmit(notice, 'notices');
                     Navigator.of(context).pop();
 
                     showDialog(

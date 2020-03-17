@@ -44,7 +44,7 @@ CustomTab notificationsTab = CustomTab(
                                 snap[index].data, 'expired_notifications');
                             model.db
                                 .collection('notices')
-                                .document(snap[index].data['title'])
+                                .document(snap[index].data['name'])
                                 .delete();
                           }
                           var d =

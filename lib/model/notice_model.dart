@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 class Notice{
+  String name;
   String title;
   String details;
   List files ;
@@ -13,6 +14,7 @@ class Notice{
   Notice(this.title,this.details,this.files,this.author,this.audience,this.timeStamp,this.priority,this.deadline);
 
   Notice.fromSnapshot(DataSnapshot snapshot):
+    name=snapshot.value['name'],
     title=snapshot.value['title'],
     details=snapshot.value['details'],
     files=snapshot.value['files'],
@@ -26,6 +28,7 @@ class Notice{
 
   toJson(){
     return{
+      'name':name,
       'title':title,
       'details':details,
       'files':files,

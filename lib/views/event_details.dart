@@ -27,8 +27,8 @@ class EventsDetails extends StatelessWidget {
       }
     }
 
-    _launchURL() async {
-      const url = 'https://google.com';
+    _launchURL(url) async {
+      // const url = 'https://google.com';
       if (await canLaunch(url)) {
         await launch(url);
       } else {
@@ -48,12 +48,12 @@ class EventsDetails extends StatelessWidget {
                     InkWell(
                       splashColor: Colors.white,
                       onTap: () {
-                        model.bookmarks.containsKey(event['title'])
-                            ? model.delBookMark(event['title'])
+                        model.bookmarks.containsKey(event['name'])
+                            ? model.delBookMark(event['name'])
                             : model.bookMark(event, 'event');
                         //AppBuilder.of(context).rebuild();
                       },
-                      child: model.bookmarks.containsKey(event['title'])
+                      child: model.bookmarks.containsKey(event['name'])
                           ? Icon(
                               Icons.bookmark,
                               size: 35,
@@ -84,7 +84,7 @@ class EventsDetails extends StatelessWidget {
                             onPressed: () {
                               model.db
                                   .collection('events')
-                                  .document(event['title'])
+                                  .document(event['name'])
                                   .delete();
                               Navigator.pop(context);
                             },
@@ -181,7 +181,7 @@ class EventsDetails extends StatelessWidget {
                                     : GestureDetector(
                                         onTap: () {
                                           try {
-                                            _launchURL();
+                                            _launchURL(event['link']);
                                           } catch (e) {
                                             print(e);
                                           }

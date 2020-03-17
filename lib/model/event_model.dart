@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 class Event{
+  String name;
   String title;
   String details;
   List files ;
@@ -15,6 +16,7 @@ class Event{
   Event(this.title,this.details,this.files,this.author,this.category,this.timeStamp,this.contact,this.committee,this.date);
 
   Event.fromSnapshot(DataSnapshot snapshot):
+    name=snapshot.value['name'],
     title=snapshot.value['title'],
     details=snapshot.value['details'],
     files=snapshot.value['files'],
@@ -30,6 +32,7 @@ class Event{
 
   toJson(){
     return{
+      'name':name,
       'title':title,
       'details':details,
       'files':files,
