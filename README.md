@@ -7,7 +7,7 @@ push notifications.
 
 ![home](ss/events.jpeg)
 ![notices](ss/notices.jpeg)
-![events%20details](ss/event detail.jpeg)
-![details%20details](ss/notice detail.jpeg)
+![eventsdetails](ss/event%20detail.jpeg)
+![detailsdetails](ss/notice%20detail.jpeg)
 ![profile](ss/profile.jpeg)
 
