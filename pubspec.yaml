@@ -41,6 +41,7 @@ dependencies:
   dio: ^3.0.2
   cached_network_image: ^2.0.0-rc
   url_launcher: ^5.4.1
+  flare_flutter: ^2.0.1
 
 
 
@@ -75,8 +76,10 @@ flutter:
    - assets/images/simba.gif
    - assets/images/lake.jpeg
    - assets/images/valley.jpg
+   - assets/images/glogo.png
    - assets/images/load.gif
    - assets/images/source.gif
+   - assets/evento.flr
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -19,6 +19,10 @@ class FirebaseHandler extends Model {
   ThemeMode tm = ThemeMode.light;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = new GoogleSignIn();
+  GoogleSignIn _googleSignInT = new GoogleSignIn(scopes: ['openid',
+    'profile',
+    'email',
+    'https://www.googleapis.com/auth/youtube.readonly']);
   final db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
   final StorageReference storageReference = FirebaseStorage.instance.ref();
@@ -209,7 +213,8 @@ class FirebaseHandler extends Model {
   }
 
   Future<FirebaseUser> gSignIn(BuildContext context) async {
-    GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+    try{
+      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
     final AuthCredential credential = GoogleAuthProvider.getCredential(
@@ -273,6 +278,10 @@ class FirebaseHandler extends Model {
         });
       }
       return user;
+    }
+    }
+    catch(e){
+      print(e);
     }
 
     //return user;

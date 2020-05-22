@@ -121,7 +121,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           Navigator.pop(context);
                           if (active != 2) {
                             //Navigator.pop(context);
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => Profile(),
@@ -149,7 +149,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           Navigator.pop(context);
                           if (active != 3) {
                             //Navigator.pop(context);
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => prefix0.Feedback(),
@@ -177,7 +177,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           Navigator.pop(context);
                           if (active != 4) {
                             //Navigator.pop(context);
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => help(),

@@ -103,7 +103,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
               )
             ]),
           )),
-          drawer: NavigationDrawer(2, context),
+          //drawer: NavigationDrawer(2, context),
         );
       },
     );

@@ -11,7 +11,7 @@ class help extends StatelessWidget {
       body: Center(
         child: Text('Version: Beta 1.0.0'),
       ),
-      drawer: NavigationDrawer(4, context),
+      //drawer: NavigationDrawer(4, context),
       
     );
   }
