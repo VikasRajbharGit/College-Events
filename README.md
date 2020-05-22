@@ -1,8 +1,13 @@
-# college_events
+# Evento
 
-A new Flutter project.
+An app for events and notices for urgent and casual notifications for Terna Engineering College with
+push notifications.
 
 ## Screenshots
 
-![home](ss/logo.mp4)
 ![home](ss/events.jpeg)
+![notices](ss/notices.jpeg)
+![events details](ss/event detail.jpeg)
+![details details](ss/notice detail.jpeg)
+![profile](ss/profile.jpeg)
+
